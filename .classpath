@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/poi-5.0.0.jar" sourcepath="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/src/java"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/poi-ooxml-5.0.0.jar" sourcepath="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/src/ooxml"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/ooxml-lib/xmlbeans-4.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/andre/LDocuments/Eclipse/EXT LIB/poi-5.0.0/poi-ooxml-lite-5.0.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
