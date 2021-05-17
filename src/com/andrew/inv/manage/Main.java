@@ -17,8 +17,10 @@ import com.andrew.inv.manage.gui.FrontPage;
  */
 public class Main {
 
+	// Main GUI
 	public static FrontPage front = null;
 	
+	// Device Database
 	public static ArrayList<Device> devices = null;
 	
 	public static void main(String[] args) throws IOException {

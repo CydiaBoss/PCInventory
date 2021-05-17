@@ -1,16 +1,19 @@
 package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridLayout;
 
+import javax.swing.Box;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.Component;
-import javax.swing.Box;
-import java.awt.GridLayout;
-import javax.swing.JLabel;
 
-public class Status extends JFrame {
+import com.andrew.inv.manage.db.Device;
+
+public class Status extends JDialog {
 
 	/**
 	 * Serial
@@ -22,12 +25,13 @@ public class Status extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Status() {
+	public Status(Device d) {
 		setType(Type.POPUP);
 		setResizable(false);
 		// Setup
 		setTitle("Status Information");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 300, 150);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -50,10 +54,10 @@ public class Status extends JFrame {
 		contentPane.add(infoPanel, BorderLayout.CENTER);
 		infoPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JLabel statusLbl = new JLabel("Status: <>");
+		JLabel statusLbl = new JLabel("Status: " + d.getStatus());
 		infoPanel.add(statusLbl);
 		
-		JLabel locLbl = new JLabel("Current Location: <>");
+		JLabel locLbl = new JLabel("Current Location: " + d.getLoc());
 		infoPanel.add(locLbl);
 	}
 

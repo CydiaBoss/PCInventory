@@ -3,6 +3,8 @@ package com.andrew.inv.manage.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.Box;
@@ -124,6 +126,30 @@ public class FrontPage {
 			}
 			
 		};
+		
+		// Add Mouse Listener
+		resultDisplay.addMouseListener(new MouseAdapter() {
+			// On Mouse Click Event (Double Click)
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// Double Click
+				if(e.getClickCount() == 2) {
+					int col = resultDisplay.getSelectedColumn(),
+						row = resultDisplay.getSelectedRow();
+					switch(col) {
+						// OS Column
+						case 3: 
+							new OS((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+							break;
+						// Status Column
+						case 4:
+							new Status((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+							break;
+					}
+				}
+			}
+		});
+		
 		scrollPane.setViewportView(resultDisplay);
 		
 		// Control Panel with Button
