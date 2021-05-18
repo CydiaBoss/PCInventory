@@ -1,25 +1,29 @@
 package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.GridLayout;
 import java.awt.Component;
-import javax.swing.Box;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
+
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
 
-public class Edit extends JFrame {
+public class Edit extends JDialog {
 
 	/**
 	 * Serial
@@ -31,16 +35,49 @@ public class Edit extends JFrame {
 	private JTextField osTxt;
 	private JTextField updateTxt;
 	private JTextField userTxt;
-	private JTextField textField;
+	private JTextField locTxt;
+	private JButton saveBtn;
 
+	/**
+	 * Main {@link DocumentListener} for all text fields
+	 */
+	private DocumentListener docListen = new DocumentListener() {
+
+		// All updates are redirected to the same method
+		
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			valueChange();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			valueChange();
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			valueChange();
+		}
+		
+		/**
+		 * Handles Text Updates
+		 */
+		private void valueChange() {
+			saveBtn.setEnabled(true);
+		}
+		
+	};
+	
 	/**
 	 * Create the frame.
 	 */
-	public Edit() {
+	public Edit(Device d) {
 		setTitle("Edit");
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 450, 275);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -73,7 +110,8 @@ public class Edit extends JFrame {
 		gbc_hostLbl.gridy = 0;
 		editPanel.add(hostLbl, gbc_hostLbl);
 		
-		hostTxt = new JTextField();
+		hostTxt = new JTextField(d.getHost());
+		hostTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_hostTxt = new GridBagConstraints();
 		gbc_hostTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_hostTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -90,7 +128,8 @@ public class Edit extends JFrame {
 		gbc_osLbl.gridy = 1;
 		editPanel.add(osLbl, gbc_osLbl);
 		
-		osTxt = new JTextField();
+		osTxt = new JTextField(d.getOS());
+		osTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_osTxt = new GridBagConstraints();
 		gbc_osTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_osTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -107,7 +146,8 @@ public class Edit extends JFrame {
 		gbc_updateLbl.gridy = 2;
 		editPanel.add(updateLbl, gbc_updateLbl);
 		
-		updateTxt = new JTextField();
+		updateTxt = new JTextField(d.getDateUpdated().toString());
+		updateTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_updateTxt = new GridBagConstraints();
 		gbc_updateTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_updateTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -126,6 +166,10 @@ public class Edit extends JFrame {
 		
 		JComboBox<Status> statusBox = new JComboBox<>();
 		statusBox.setModel(new DefaultComboBoxModel<Status>(Status.values()));
+		statusBox.setSelectedItem(d.getStatus());
+		statusBox.addActionListener(e -> 
+			saveBtn.setEnabled(true)
+		);
 		GridBagConstraints gbc_statusBox = new GridBagConstraints();
 		gbc_statusBox.insets = new Insets(0, 0, 5, 0);
 		gbc_statusBox.fill = GridBagConstraints.HORIZONTAL;
@@ -141,7 +185,8 @@ public class Edit extends JFrame {
 		gbc_userLbl.gridy = 4;
 		editPanel.add(userLbl, gbc_userLbl);
 		
-		userTxt = new JTextField();
+		userTxt = new JTextField(d.getUser());
+		userTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_userTxt = new GridBagConstraints();
 		gbc_userTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_userTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -158,13 +203,14 @@ public class Edit extends JFrame {
 		gbc_locLbl.gridy = 5;
 		editPanel.add(locLbl, gbc_locLbl);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 5;
-		editPanel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		locTxt = new JTextField(d.getLoc());
+		locTxt.getDocument().addDocumentListener(docListen);
+		GridBagConstraints gbc_locTxt = new GridBagConstraints();
+		gbc_locTxt.fill = GridBagConstraints.HORIZONTAL;
+		gbc_locTxt.gridx = 1;
+		gbc_locTxt.gridy = 5;
+		editPanel.add(locTxt, gbc_locTxt);
+		locTxt.setColumns(10);
 		
 		JPanel ctrlPanel = new JPanel();
 		contentPane.add(ctrlPanel, BorderLayout.SOUTH);
@@ -184,9 +230,14 @@ public class Edit extends JFrame {
 		btnPanel.setLayout(new GridLayout(1, 0, 100, 0));
 		
 		JButton cancelBtn = new JButton("Cancel");
+		cancelBtn.addActionListener(e -> {
+			dispose();
+		});
 		btnPanel.add(cancelBtn);
 		
-		JButton saveBtn = new JButton("Save");
+		// Save Button is Default Disabled
+		saveBtn = new JButton("Save");
+		saveBtn.setEnabled(false);
 		btnPanel.add(saveBtn);
 	}
 

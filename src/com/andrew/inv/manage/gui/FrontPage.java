@@ -14,10 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FrontPage {
 
@@ -110,6 +115,8 @@ public class FrontPage {
 				getTableHeader().setReorderingAllowed(false);
 				// Disable Resizing
 				getTableHeader().setResizingAllowed(false);
+				// Single Selection Only
+				getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			}
 			
 			/**
@@ -126,6 +133,8 @@ public class FrontPage {
 			}
 			
 		};
+		
+		// See Line 192 for List Listener
 		
 		// Add Mouse Listener
 		resultDisplay.addMouseListener(new MouseAdapter() {
@@ -173,14 +182,31 @@ public class FrontPage {
 		ctrlPanel.add(btnPanel, BorderLayout.CENTER);
 		btnPanel.setLayout(new GridLayout(1, 0, 20, 0));
 		
+		JButton newBtn = new JButton("Add");
+		btnPanel.add(newBtn);
+		
+		// Edit Button -> Default Unselected
 		JButton editBtn = new JButton("Edit");
+		editBtn.addActionListener(e -> 
+			new Edit((Device) resultDisplay.getModel()
+										   .getValueAt(resultDisplay.getSelectedRow(), 0))
+										   .setVisible(true)
+		);
+		editBtn.setEnabled(false);
 		btnPanel.add(editBtn);
 		
 		JButton ixBtn = new JButton("Import/Export");
 		btnPanel.add(ixBtn);
 		
-		JButton newBtn = new JButton("Add");
-		btnPanel.add(newBtn);
+		// Add List Selection Listener
+		resultDisplay.getSelectionModel().addListSelectionListener(e -> {
+			// Enable or Disable Edit Button
+			if(resultDisplay.getSelectedRow() != -1) 
+				editBtn.setEnabled(true);
+			else
+				editBtn.setEnabled(false);
+		});
+		
 	}
 
 }

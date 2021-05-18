@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import javax.swing.UIManager;
+
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.file.CSV;
 import com.andrew.inv.manage.gui.FrontPage;
@@ -32,6 +34,7 @@ public class Main {
 		// Launch GUI
 		EventQueue.invokeLater(() -> {
 			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				front = new FrontPage();
 			} catch (Exception e) {
 				e.printStackTrace();
