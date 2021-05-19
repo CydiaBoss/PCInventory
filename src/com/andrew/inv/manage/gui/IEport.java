@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -101,6 +102,7 @@ public class IEport extends JDialog {
 		iePanel.add(inFileLbl, gbc_inFileLbl);
 		
 		inFileTxt = new JTextField();
+		inFileTxt.setEnabled(false);
 		GridBagConstraints gbc_inFileTxt = new GridBagConstraints();
 		gbc_inFileTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_inFileTxt.insets = new Insets(0, 0, 5, 5);
@@ -127,17 +129,37 @@ public class IEport extends JDialog {
 		
 		JButton inFileBtn = new JButton("Browse");
 		inFileBtn.addActionListener(e -> {
-			int result = fileChooser.showOpenDialog(this);
+			int result = -1;
+			// If Importing
+			if(importBtn.isSelected())
+				result = fileChooser.showOpenDialog(this);
+			// Else Exporting
+			else
+				result = fileChooser.showSaveDialog(this);
 			// OK Pressed
-			if(result == JFileChooser.APPROVE_OPTION) {
-				fileChooser.getSelectedFile();
-			}
+			if(result == JFileChooser.APPROVE_OPTION)
+				inFileTxt.setText(fileChooser.getSelectedFile().getAbsolutePath());
 		});
+		// Default Off
+		inFileBtn.setEnabled(false);
 		GridBagConstraints gbc_inFileBtn = new GridBagConstraints();
 		gbc_inFileBtn.insets = new Insets(0, 0, 5, 0);
 		gbc_inFileBtn.gridx = 2;
 		gbc_inFileBtn.gridy = 1;
 		iePanel.add(inFileBtn, gbc_inFileBtn);
+		
+		// Set Up Enabler
+		ActionListener radioBtns = e -> {
+			if(importBtn.isSelected() || exportBtn.isSelected()) {
+				inFileTxt.setEnabled(true);
+				inFileBtn.setEnabled(true);
+			}else{
+				inFileTxt.setEnabled(false);
+				inFileBtn.setEnabled(false);
+			}
+		};
+		importBtn.addActionListener(radioBtns);
+		exportBtn.addActionListener(radioBtns);
 		
 		Box fileTypeBox = Box.createHorizontalBox();
 		GridBagConstraints gbc_fileTypeBox = new GridBagConstraints();
@@ -184,6 +206,9 @@ public class IEport extends JDialog {
 		btnPanel.setLayout(new GridLayout(1, 0, 100, 0));
 		
 		JButton cancelBtn = new JButton("Cancel");
+		cancelBtn.addActionListener(e -> 
+			dispose()
+		);
 		btnPanel.add(cancelBtn);
 		
 		JButton startBtn = new JButton("Start");

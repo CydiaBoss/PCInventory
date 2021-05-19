@@ -64,12 +64,24 @@ public class Main {
 		for(Device de : d) 
 			devs.add(de);
 		
+		// Transfer Control to other Method
+		save(devs);
+	}
+	
+	/**
+	 * Add to the data file
+	 * 
+	 * @param d
+	 * The new devices
+	 */
+	public static void save(ArrayList<Device> d) {
+		
 		// Add to Registry
-		Main.devices.addAll(devs);
+		Main.devices.addAll(d);
 		
 		// Append
 		try {
-			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()), devs);
+			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()), d);
 		} catch (IOException e) {}
 	}
 }
