@@ -3,6 +3,7 @@ package com.andrew.inv.manage.file;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.andrew.inv.manage.db.Device;
@@ -35,7 +36,7 @@ public class CSV {
 				// Adds a new device with its Host, Serial, Model
 				Device currDevice = new Device(data.get(0), data.get(1), data.get(2));
 				// Set OS
-				currDevice.setOS(data.get(3), data.get(4));
+				currDevice.setOS(data.get(3), LocalDate.parse(data.get(4)));
 				// Set Location
 				currDevice.setLoc(data.get(5));
 				// Set Status
@@ -84,4 +85,6 @@ public class CSV {
 		}
 		return cells;
 	}
+	
+	// TODO ExportData
 } 

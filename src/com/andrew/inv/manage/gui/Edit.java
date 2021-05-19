@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.time.LocalDate;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -20,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
 
@@ -33,7 +35,10 @@ public class Edit extends JDialog {
 	private JPanel contentPane;
 	private JTextField hostTxt;
 	private JTextField osTxt;
-	private JTextField updateTxt;
+	private JTextField yearTxt;
+	private JComboBox<String> monthBox;
+	private JTextField dateTxt;
+	private JComboBox<Status> statusBox;
 	private JTextField userTxt;
 	private JTextField locTxt;
 	private JButton saveBtn;
@@ -69,6 +74,21 @@ public class Edit extends JDialog {
 		
 	};
 	
+	private final String[] MONTHS = {
+		"January", 
+		"February", 
+		"March", 
+		"April", 
+		"May", 
+		"June", 
+		"July", 
+		"August", 
+		"September", 
+		"October", 
+		"November", 
+		"December"
+	};
+	
 	/**
 	 * Create the frame.
 	 */
@@ -96,9 +116,9 @@ public class Edit extends JDialog {
 		JPanel editPanel = new JPanel();
 		contentPane.add(editPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_editPanel = new GridBagLayout();
-		gbl_editPanel.columnWidths = new int[]{0, 0, 0};
+		gbl_editPanel.columnWidths = new int[]{0, 0, 0, 0, 0};
 		gbl_editPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_editPanel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_editPanel.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_editPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		editPanel.setLayout(gbl_editPanel);
 		
@@ -113,6 +133,7 @@ public class Edit extends JDialog {
 		hostTxt = new JTextField(d.getHost());
 		hostTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_hostTxt = new GridBagConstraints();
+		gbc_hostTxt.gridwidth = 3;
 		gbc_hostTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_hostTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_hostTxt.gridx = 1;
@@ -131,6 +152,7 @@ public class Edit extends JDialog {
 		osTxt = new JTextField(d.getOS());
 		osTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_osTxt = new GridBagConstraints();
+		gbc_osTxt.gridwidth = 3;
 		gbc_osTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_osTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_osTxt.gridx = 1;
@@ -146,15 +168,38 @@ public class Edit extends JDialog {
 		gbc_updateLbl.gridy = 2;
 		editPanel.add(updateLbl, gbc_updateLbl);
 		
-		updateTxt = new JTextField(d.getDateUpdated().toString());
-		updateTxt.getDocument().addDocumentListener(docListen);
-		GridBagConstraints gbc_updateTxt = new GridBagConstraints();
-		gbc_updateTxt.insets = new Insets(0, 0, 5, 0);
-		gbc_updateTxt.fill = GridBagConstraints.HORIZONTAL;
-		gbc_updateTxt.gridx = 1;
-		gbc_updateTxt.gridy = 2;
-		editPanel.add(updateTxt, gbc_updateTxt);
-		updateTxt.setColumns(10);
+		yearTxt = new JTextField(d.getDateUpdated().getYear() + "");
+		yearTxt.getDocument().addDocumentListener(docListen);
+		GridBagConstraints gbc_yearTxt = new GridBagConstraints();
+		gbc_yearTxt.insets = new Insets(0, 0, 5, 5);
+		gbc_yearTxt.fill = GridBagConstraints.HORIZONTAL;
+		gbc_yearTxt.gridx = 1;
+		gbc_yearTxt.gridy = 2;
+		editPanel.add(yearTxt, gbc_yearTxt);
+		yearTxt.setColumns(10);
+		
+		monthBox = new JComboBox<>();
+		monthBox.setModel(new DefaultComboBoxModel<String>(MONTHS));
+		monthBox.setSelectedIndex(d.getDateUpdated().getMonthValue() - 1);
+		monthBox.addActionListener(e -> 
+			saveBtn.setEnabled(true)
+		);
+		GridBagConstraints gbc_monthBox = new GridBagConstraints();
+		gbc_monthBox.insets = new Insets(0, 0, 5, 5);
+		gbc_monthBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_monthBox.gridx = 2;
+		gbc_monthBox.gridy = 2;
+		editPanel.add(monthBox, gbc_monthBox);
+		
+		dateTxt = new JTextField(d.getDateUpdated().getDayOfMonth() + "");
+		dateTxt.getDocument().addDocumentListener(docListen);
+		GridBagConstraints gbc_dateTxt = new GridBagConstraints();
+		gbc_dateTxt.insets = new Insets(0, 0, 5, 0);
+		gbc_dateTxt.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateTxt.gridx = 3;
+		gbc_dateTxt.gridy = 2;
+		editPanel.add(dateTxt, gbc_dateTxt);
+		dateTxt.setColumns(10);
 		
 		JLabel statusLbl = new JLabel("Status: ");
 		GridBagConstraints gbc_statusLbl = new GridBagConstraints();
@@ -164,13 +209,14 @@ public class Edit extends JDialog {
 		gbc_statusLbl.gridy = 3;
 		editPanel.add(statusLbl, gbc_statusLbl);
 		
-		JComboBox<Status> statusBox = new JComboBox<>();
+		statusBox = new JComboBox<>();
 		statusBox.setModel(new DefaultComboBoxModel<Status>(Status.values()));
 		statusBox.setSelectedItem(d.getStatus());
 		statusBox.addActionListener(e -> 
 			saveBtn.setEnabled(true)
 		);
 		GridBagConstraints gbc_statusBox = new GridBagConstraints();
+		gbc_statusBox.gridwidth = 3;
 		gbc_statusBox.insets = new Insets(0, 0, 5, 0);
 		gbc_statusBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_statusBox.gridx = 1;
@@ -188,6 +234,7 @@ public class Edit extends JDialog {
 		userTxt = new JTextField(d.getUser());
 		userTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_userTxt = new GridBagConstraints();
+		gbc_userTxt.gridwidth = 3;
 		gbc_userTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_userTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_userTxt.gridx = 1;
@@ -206,6 +253,7 @@ public class Edit extends JDialog {
 		locTxt = new JTextField(d.getLoc());
 		locTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_locTxt = new GridBagConstraints();
+		gbc_locTxt.gridwidth = 3;
 		gbc_locTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_locTxt.gridx = 1;
 		gbc_locTxt.gridy = 5;
@@ -238,6 +286,22 @@ public class Edit extends JDialog {
 		// Save Button is Default Disabled
 		saveBtn = new JButton("Save");
 		saveBtn.setEnabled(false);
+		saveBtn.addActionListener(e -> {
+			// Update Information
+			d.setHost(hostTxt.getText().trim());
+			d.setLoc(locTxt.getText().trim());
+			d.setStatus((Status) statusBox.getSelectedItem());
+			d.setUser(userTxt.getText().trim());
+			d.setOS(osTxt.getText().trim(), 
+				LocalDate.of(
+					Integer.parseInt(yearTxt.getText().trim()), 
+					monthBox.getSelectedIndex() + 1, 
+					Integer.parseInt(dateTxt.getText().trim())));
+			// Rebuilt Table
+			Main.front.tableRebuild();
+			// Close
+			dispose();
+		});
 		btnPanel.add(saveBtn);
 	}
 

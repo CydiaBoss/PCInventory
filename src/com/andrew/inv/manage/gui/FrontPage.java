@@ -2,6 +2,7 @@ package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,13 +17,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.table.DefaultTableModel;
 
 public class FrontPage {
 
@@ -93,22 +91,8 @@ public class FrontPage {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		frm.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
-		// Setup Data for Table
-		String[] headers = new String[] {
-			"Hostname", "User", "Model", "OS", "Status"
-		};
-		
-		Object[][] deviceData = new Object[Main.devices.size()][5];
-		
-		for(int i = 0; i < Main.devices.size(); i++) {
-			Device d = Main.devices.get(i);
-			deviceData[i] = new Object[] {
-				d, d.getUser(), d.getModel(), d.getOS(), d.getStatus()
-			};
-		}
-		
 		// Make Table
-		resultDisplay = new JTable(deviceData, headers) {
+		resultDisplay = new JTable() {
 			
 			{
 				// Disable Reordering
@@ -133,6 +117,9 @@ public class FrontPage {
 			}
 			
 		};
+		
+		// Setup Data for Table
+		tableRebuild();
 		
 		// See Line 192 for List Listener
 		
@@ -207,6 +194,34 @@ public class FrontPage {
 				editBtn.setEnabled(false);
 		});
 		
+	}
+	
+	// Headers for the Tables
+	private final String[] HEADERS = new String[] {
+		"Hostname", "User", "Model", "OS", "Status"
+	};
+		
+	
+	/**
+	 * Rebuilds the table
+	 */
+	public void tableRebuild() {
+		// Setup Data for Table
+		Object[][] deviceData = new Object[Main.devices.size()][5];
+		
+		for(int i = 0; i < Main.devices.size(); i++) {
+			Device d = Main.devices.get(i);
+			deviceData[i] = new Object[] {
+				d, d.getUser(), d.getModel(), d.getOS(), d.getStatus()
+			};
+		}
+		
+		// Push for Update
+		EventQueue.invokeLater(() -> {
+			// Update Table
+			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS));
+			// frm.repaint();
+		});
 	}
 
 }

@@ -56,12 +56,12 @@ public class Device {
 		
 	}
 	
-	private final String HOST,
-						 SERIAL,
+	private final String SERIAL,
 						 MODEL;
 						 
 	// Default is Other
-	private String os = "Other";
+	private String host,
+				   os = "Other";
 	
 	// Default is Today's Date
 	private LocalDate dateUpdated = LocalDate.now();
@@ -87,15 +87,19 @@ public class Device {
 	 * @param os
 	 * Operating System
 	 */
-	public Device(final String HOST, final String SERIAL, final String MODEL) {
+	public Device(String host, final String SERIAL, final String MODEL) {
 		// Assign the correct variables
-		this.HOST = HOST;
+		this.host = host;
 		this.SERIAL = SERIAL;
 		this.MODEL = MODEL;
 	}
 
 	public String getHost() {
-		return HOST;
+		return host;
+	}
+	
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public String getSerial() {
@@ -120,11 +124,11 @@ public class Device {
 	 * @param newOS
 	 * New OS Version
 	 * @param date
-	 * Date of Update (YYYY-MM-DD)
+	 * Date of Update
 	 */
-	public void setOS(String newOS, String date) {
+	public void setOS(String newOS, LocalDate date) {
 		os = newOS;
-		dateUpdated = LocalDate.parse(date);
+		dateUpdated = date;
 	}
 
 	public Status getStatus() {
