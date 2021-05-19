@@ -87,6 +87,10 @@ public class CSV {
 		return cells;
 	}
 	
+	// Options
+	public static final StandardOpenOption EDIT = StandardOpenOption.WRITE,
+										   ADD = StandardOpenOption.APPEND;
+	
 	/**
 	 * Write to a File
 	 * 
@@ -111,7 +115,39 @@ public class CSV {
 				d.getStatus().name() + "," + 
 				d.getUser()
 			);
+		
 		// Write
-		Files.write(path, row, StandardOpenOption.WRITE);
+		Files.write(path, row, CSV.EDIT);
+	}
+	
+	/**
+	 * Append to a File
+	 * 
+	 * @param path
+	 * The File
+	 * @param devices
+	 * New Devices
+	 * 
+	 * @throws IOException
+	 * Error
+	 */
+	public static void exportData(Path path, ArrayList<Device> devices) throws IOException {
+		// Create an array of strings
+		ArrayList<String> row = new ArrayList<>();
+		// Transcribe
+		for(Device d : devices)
+			row.add(
+				d.getHost() + "," + 
+				d.getSerial() + "," + 
+				d.getModel() + "," + 
+				d.getOS() + "," + 
+				d.getDateUpdated().toString() + "," + 
+				d.getLoc() + "," + 
+				d.getStatus().name() + "," + 
+				d.getUser()
+			);
+		
+		// Write
+		Files.write(path, row, CSV.ADD);
 	}
 } 

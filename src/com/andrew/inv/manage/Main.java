@@ -46,8 +46,30 @@ public class Main {
 	 * Updated the data file
 	 */
 	public static void save() {
+		// Edit
 		try {
 			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()));
+		} catch (IOException e) {}
+	}
+	
+	/**
+	 * Add to the data file
+	 * 
+	 * @param d
+	 * The new devices
+	 */
+	public static void save(Device... d) {
+		// Array to ArrayList
+		ArrayList<Device> devs = new ArrayList<>();
+		for(Device de : d) 
+			devs.add(de);
+		
+		// Add to Registry
+		Main.devices.addAll(devs);
+		
+		// Append
+		try {
+			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()), devs);
 		} catch (IOException e) {}
 	}
 }

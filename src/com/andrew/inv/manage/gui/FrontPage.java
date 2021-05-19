@@ -186,6 +186,9 @@ public class FrontPage {
 		btnPanel.add(editBtn);
 		
 		JButton ixBtn = new JButton("Import/Export");
+		ixBtn.addActionListener(e -> 
+			new IEport().setVisible(true)
+		);
 		btnPanel.add(ixBtn);
 		
 		// Add List Selection Listener

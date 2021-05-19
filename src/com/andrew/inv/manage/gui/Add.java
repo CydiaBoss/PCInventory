@@ -338,12 +338,10 @@ public class Add extends JDialog {
 					Integer.parseInt(yearTxt.getText().trim()), 
 					monthBox.getSelectedIndex() + 1, 
 					Integer.parseInt(dateTxt.getText().trim())));
-			// Add to Registry
-			Main.devices.add(d);
+			// Save Changes
+			Main.save(d);
 			// Rebuilt Table
 			Main.front.tableRebuild();
-			// Save Changes
-			Main.save();
 			// Close
 			dispose();
 		});

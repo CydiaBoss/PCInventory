@@ -297,10 +297,10 @@ public class Edit extends JDialog {
 					Integer.parseInt(yearTxt.getText().trim()), 
 					monthBox.getSelectedIndex() + 1, 
 					Integer.parseInt(dateTxt.getText().trim())));
-			// Rebuilt Table
-			Main.front.tableRebuild();
 			// Save Changes
 			Main.save();
+			// Rebuilt Table
+			Main.front.tableRebuild();
 			// Close
 			dispose();
 		});

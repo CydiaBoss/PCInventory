@@ -1,26 +1,28 @@
 package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.JRadioButton;
-import java.awt.Insets;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import java.awt.Color;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class IEport extends JFrame {
+public class IEport extends JDialog {
 
 	/**
 	 * Serial
@@ -37,8 +39,9 @@ public class IEport extends JFrame {
 		setTitle("Import & Export");
 		setType(Type.POPUP);
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 274);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 450, 215);
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -57,9 +60,9 @@ public class IEport extends JFrame {
 		contentPane.add(iePanel, BorderLayout.CENTER);
 		GridBagLayout gbl_iePanel = new GridBagLayout();
 		gbl_iePanel.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_iePanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gbl_iePanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_iePanel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_iePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_iePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		iePanel.setLayout(gbl_iePanel);
 		
 		JLabel importExportLbl = new JLabel("Function: ");
@@ -106,20 +109,35 @@ public class IEport extends JFrame {
 		iePanel.add(inFileTxt, gbc_inFileTxt);
 		inFileTxt.setColumns(10);
 		
-		JButton inFileBtn = new JButton("...");
+		JFileChooser fileChooser = new JFileChooser() {
+
+			// Setup
+			{
+				addChoosableFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
+				setAcceptAllFileFilterUsed(false);
+				setFileSelectionMode(JFileChooser.FILES_ONLY);
+			}
+			
+			/**
+			 * Serial
+			 */
+			private static final long serialVersionUID = 32428736498239L;
+		
+		};
+		
+		JButton inFileBtn = new JButton("Browse");
+		inFileBtn.addActionListener(e -> {
+			int result = fileChooser.showOpenDialog(this);
+			// OK Pressed
+			if(result == JFileChooser.APPROVE_OPTION) {
+				fileChooser.getSelectedFile();
+			}
+		});
 		GridBagConstraints gbc_inFileBtn = new GridBagConstraints();
 		gbc_inFileBtn.insets = new Insets(0, 0, 5, 0);
 		gbc_inFileBtn.gridx = 2;
 		gbc_inFileBtn.gridy = 1;
 		iePanel.add(inFileBtn, gbc_inFileBtn);
-		
-		JLabel fileTypeLbl = new JLabel("File Type: ");
-		GridBagConstraints gbc_fileTypeLbl = new GridBagConstraints();
-		gbc_fileTypeLbl.anchor = GridBagConstraints.EAST;
-		gbc_fileTypeLbl.insets = new Insets(0, 0, 5, 5);
-		gbc_fileTypeLbl.gridx = 0;
-		gbc_fileTypeLbl.gridy = 2;
-		iePanel.add(fileTypeLbl, gbc_fileTypeLbl);
 		
 		Box fileTypeBox = Box.createHorizontalBox();
 		GridBagConstraints gbc_fileTypeBox = new GridBagConstraints();
@@ -130,16 +148,6 @@ public class IEport extends JFrame {
 		gbc_fileTypeBox.gridy = 2;
 		iePanel.add(fileTypeBox, gbc_fileTypeBox);
 		
-		ButtonGroup fileBtnGrp = new ButtonGroup();
-		
-		JRadioButton xlsxBtn = new JRadioButton(".xlsx");
-		fileTypeBox.add(xlsxBtn);
-		fileBtnGrp.add(xlsxBtn);
-		
-		JRadioButton csvBtn = new JRadioButton(".csv");
-		fileTypeBox.add(csvBtn);
-		fileBtnGrp.add(csvBtn);
-		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		progressBar.setForeground(Color.GREEN);
@@ -148,15 +156,14 @@ public class IEport extends JFrame {
 		gbc_progressBar.fill = GridBagConstraints.BOTH;
 		gbc_progressBar.gridwidth = 3;
 		gbc_progressBar.gridx = 0;
-		gbc_progressBar.gridy = 4;
+		gbc_progressBar.gridy = 3;
 		iePanel.add(progressBar, gbc_progressBar);
 		
 		JLabel progLbl = new JLabel("...");
 		GridBagConstraints gbc_progLbl = new GridBagConstraints();
 		gbc_progLbl.gridwidth = 3;
-		gbc_progLbl.insets = new Insets(0, 0, 0, 5);
 		gbc_progLbl.gridx = 0;
-		gbc_progLbl.gridy = 5;
+		gbc_progLbl.gridy = 4;
 		iePanel.add(progLbl, gbc_progLbl);
 		
 		JPanel ctrlPanel = new JPanel();
