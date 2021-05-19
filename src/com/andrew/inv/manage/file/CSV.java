@@ -3,9 +3,11 @@ package com.andrew.inv.manage.file;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 
 import com.andrew.inv.manage.db.Device.Status;
@@ -59,7 +61,6 @@ public class CSV {
 		ArrayList<String> cells = new ArrayList<>();
 		String tempCell = "";
 		// Tracks quotation
-		// TODO Check Logic
 		boolean inQuote = false;
 		for(String cell : line.split(",")) {
 			// Quote Detection Ends
@@ -86,5 +87,31 @@ public class CSV {
 		return cells;
 	}
 	
-	// TODO ExportData
+	/**
+	 * Write to a File
+	 * 
+	 * @param path
+	 * The File
+	 * 
+	 * @throws IOException
+	 * Error
+	 */
+	public static void exportData(Path path) throws IOException {
+		// Create an array of strings
+		ArrayList<String> row = new ArrayList<>();
+		// Transcribe
+		for(Device d : Main.devices)
+			row.add(
+				d.getHost() + "," + 
+				d.getSerial() + "," + 
+				d.getModel() + "," + 
+				d.getOS() + "," + 
+				d.getDateUpdated().toString() + "," + 
+				d.getLoc() + "," + 
+				d.getStatus().name() + "," + 
+				d.getUser()
+			);
+		// Write
+		Files.write(path, row, StandardOpenOption.WRITE);
+	}
 } 

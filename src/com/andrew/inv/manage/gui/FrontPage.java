@@ -170,6 +170,9 @@ public class FrontPage {
 		btnPanel.setLayout(new GridLayout(1, 0, 20, 0));
 		
 		JButton newBtn = new JButton("Add");
+		newBtn.addActionListener(e -> 
+			new Add().setVisible(true)
+		);
 		btnPanel.add(newBtn);
 		
 		// Edit Button -> Default Unselected
@@ -217,11 +220,10 @@ public class FrontPage {
 		}
 		
 		// Push for Update
-		EventQueue.invokeLater(() -> {
+		EventQueue.invokeLater(() -> 
 			// Update Table
-			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS));
-			// frm.repaint();
-		});
+			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS))
+		);
 	}
 
 }

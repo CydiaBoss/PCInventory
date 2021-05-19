@@ -42,4 +42,12 @@ public class Main {
 		});
 	}
 
+	/**
+	 * Updated the data file
+	 */
+	public static void save() {
+		try {
+			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()));
+		} catch (IOException e) {}
+	}
 }
