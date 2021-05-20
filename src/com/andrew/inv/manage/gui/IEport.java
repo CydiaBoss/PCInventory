@@ -1,13 +1,15 @@
 package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -16,12 +18,17 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.andrew.inv.manage.Main;
+import com.andrew.inv.manage.file.CSV;
 
 public class IEport extends JDialog {
 
@@ -41,7 +48,7 @@ public class IEport extends JDialog {
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 215);
+		setBounds(100, 100, 450, 175);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -61,9 +68,9 @@ public class IEport extends JDialog {
 		contentPane.add(iePanel, BorderLayout.CENTER);
 		GridBagLayout gbl_iePanel = new GridBagLayout();
 		gbl_iePanel.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_iePanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
+		gbl_iePanel.rowHeights = new int[]{0, 0, 0};
 		gbl_iePanel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_iePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_iePanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		iePanel.setLayout(gbl_iePanel);
 		
 		JLabel importExportLbl = new JLabel("Function: ");
@@ -96,7 +103,7 @@ public class IEport extends JDialog {
 		JLabel inFileLbl = new JLabel("File Location: ");
 		GridBagConstraints gbc_inFileLbl = new GridBagConstraints();
 		gbc_inFileLbl.anchor = GridBagConstraints.EAST;
-		gbc_inFileLbl.insets = new Insets(0, 0, 5, 5);
+		gbc_inFileLbl.insets = new Insets(0, 0, 0, 5);
 		gbc_inFileLbl.gridx = 0;
 		gbc_inFileLbl.gridy = 1;
 		iePanel.add(inFileLbl, gbc_inFileLbl);
@@ -105,7 +112,7 @@ public class IEport extends JDialog {
 		inFileTxt.setEnabled(false);
 		GridBagConstraints gbc_inFileTxt = new GridBagConstraints();
 		gbc_inFileTxt.fill = GridBagConstraints.HORIZONTAL;
-		gbc_inFileTxt.insets = new Insets(0, 0, 5, 5);
+		gbc_inFileTxt.insets = new Insets(0, 0, 0, 5);
 		gbc_inFileTxt.gridx = 1;
 		gbc_inFileTxt.gridy = 1;
 		iePanel.add(inFileTxt, gbc_inFileTxt);
@@ -143,7 +150,6 @@ public class IEport extends JDialog {
 		// Default Off
 		inFileBtn.setEnabled(false);
 		GridBagConstraints gbc_inFileBtn = new GridBagConstraints();
-		gbc_inFileBtn.insets = new Insets(0, 0, 5, 0);
 		gbc_inFileBtn.gridx = 2;
 		gbc_inFileBtn.gridy = 1;
 		iePanel.add(inFileBtn, gbc_inFileBtn);
@@ -160,33 +166,6 @@ public class IEport extends JDialog {
 		};
 		importBtn.addActionListener(radioBtns);
 		exportBtn.addActionListener(radioBtns);
-		
-		Box fileTypeBox = Box.createHorizontalBox();
-		GridBagConstraints gbc_fileTypeBox = new GridBagConstraints();
-		gbc_fileTypeBox.insets = new Insets(0, 0, 5, 0);
-		gbc_fileTypeBox.anchor = GridBagConstraints.WEST;
-		gbc_fileTypeBox.gridwidth = 2;
-		gbc_fileTypeBox.gridx = 1;
-		gbc_fileTypeBox.gridy = 2;
-		iePanel.add(fileTypeBox, gbc_fileTypeBox);
-		
-		JProgressBar progressBar = new JProgressBar();
-		progressBar.setStringPainted(true);
-		progressBar.setForeground(Color.GREEN);
-		GridBagConstraints gbc_progressBar = new GridBagConstraints();
-		gbc_progressBar.insets = new Insets(0, 0, 5, 0);
-		gbc_progressBar.fill = GridBagConstraints.BOTH;
-		gbc_progressBar.gridwidth = 3;
-		gbc_progressBar.gridx = 0;
-		gbc_progressBar.gridy = 3;
-		iePanel.add(progressBar, gbc_progressBar);
-		
-		JLabel progLbl = new JLabel("...");
-		GridBagConstraints gbc_progLbl = new GridBagConstraints();
-		gbc_progLbl.gridwidth = 3;
-		gbc_progLbl.gridx = 0;
-		gbc_progLbl.gridy = 4;
-		iePanel.add(progLbl, gbc_progLbl);
 		
 		JPanel ctrlPanel = new JPanel();
 		contentPane.add(ctrlPanel, BorderLayout.SOUTH);
@@ -212,7 +191,66 @@ public class IEport extends JDialog {
 		btnPanel.add(cancelBtn);
 		
 		JButton startBtn = new JButton("Start");
+		startBtn.addActionListener(e -> {
+			// Get File
+			File f = new File(inFileTxt.getText());
+			// Check for Import or Export
+			if(importBtn.isSelected()) {
+				// Reads File and Uploads
+				Main.save(CSV.importData(Paths.get(inFileTxt.getText())));
+				// Rebuilds Table
+				Main.front.tableRebuild();
+				// Confirmation Message
+				JOptionPane.showMessageDialog(this, "Data was imported.");
+			}else{
+				try {
+					// Creates the File
+					f.createNewFile();
+					// Exports
+					CSV.exportData(Paths.get(inFileTxt.getText()));
+					// Confirmation Message
+					JOptionPane.showMessageDialog(this, "Data was exported and stored in the new file.");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			// Close
+			dispose();
+		});
+		// Default Off
+		startBtn.setEnabled(false);
 		btnPanel.add(startBtn);
+
+		// Document Listener
+		inFileTxt.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				update();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				update();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				update();
+			}
+			
+			/**
+			 * What to do when the field is updated
+			 */
+			public void update() {
+				// Enable or Disable the Start Button
+				if(inFileTxt.getText().trim().equals(""))
+					startBtn.setEnabled(false);
+				else
+					startBtn.setEnabled(true);
+			}
+			
+		});
 	}
 
 }

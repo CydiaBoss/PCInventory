@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.EventObject;
 
 import javax.swing.Box;
@@ -20,6 +21,8 @@ import javax.swing.ScrollPaneConstants;
 
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
+import com.andrew.inv.manage.db.Search;
+
 import javax.swing.table.DefaultTableModel;
 
 public class FrontPage {
@@ -77,6 +80,12 @@ public class FrontPage {
 		searchBar.setColumns(10);
 		
 		JButton searchBtn = new JButton("Search");
+		searchBtn.addActionListener(e -> {
+			if(searchBar.getText().trim().equals("")) 
+				tableRebuild();
+			else
+				Search.searchFor(searchBar.getText().trim());
+		});
 		searchSpace.add(searchBtn, BorderLayout.EAST);
 		
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
@@ -207,16 +216,25 @@ public class FrontPage {
 		"Hostname", "User", "Model", "OS", "Status"
 	};
 		
+	/**
+	 * Rebuilds the table with Main Database
+	 */
+	public void tableRebuild() {
+		tableRebuild(Main.devices);
+	}
 	
 	/**
 	 * Rebuilds the table
+	 * 
+	 * @param devices
+	 * The Devices to Display
 	 */
-	public void tableRebuild() {
+	public void tableRebuild(ArrayList<Device> devices) {
 		// Setup Data for Table
-		Object[][] deviceData = new Object[Main.devices.size()][5];
+		Object[][] deviceData = new Object[devices.size()][5];
 		
-		for(int i = 0; i < Main.devices.size(); i++) {
-			Device d = Main.devices.get(i);
+		for(int i = 0; i < devices.size(); i++) {
+			Device d = devices.get(i);
 			deviceData[i] = new Object[] {
 				d, d.getUser(), d.getModel(), d.getOS(), d.getStatus()
 			};
@@ -227,6 +245,16 @@ public class FrontPage {
 			// Update Table
 			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS))
 		);
+	}
+	
+	/**
+	 * Returns the Frame
+	 * 
+	 * @return
+	 * The Frame
+	 */
+	public JFrame getFrame() {
+		return frm;
 	}
 
 }
