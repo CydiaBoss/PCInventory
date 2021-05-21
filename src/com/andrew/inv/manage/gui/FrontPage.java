@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ public class FrontPage {
 		// Create Frame
 		frm = new JFrame();
 		frm.setTitle("PC Inventory");
+		frm.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
 		frm.setBounds(100, 100, 450, 300);
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.getContentPane().setLayout(new BorderLayout(0, 0));
@@ -87,6 +91,24 @@ public class FrontPage {
 				Search.searchFor(searchBar.getText().trim());
 		});
 		searchSpace.add(searchBtn, BorderLayout.EAST);
+		
+		// Setup Enter Detection
+		searchBar.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// Search on Enter Key
+				if(e.getKeyChar() == '\n')
+					searchBtn.doClick();
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			
+		});
 		
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
 		frm.getContentPane().add(horizontalStrut_2, BorderLayout.EAST);

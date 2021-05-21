@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.text.ParseException;
 import java.time.LocalDate;
 
 import javax.swing.Box;
@@ -13,14 +15,19 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.MaskFormatter;
 
+import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
@@ -35,11 +42,8 @@ public class Add extends JDialog {
 	private JPanel contentPane;
 	private JTextField hostTxt;
 	private JTextField serialTxt;
-	private JTextField modelTxt;
 	private JTextField osTxt;
-	private JTextField yearTxt;
 	private JComboBox<String> monthBox;
-	private JTextField dateTxt;
 	private JComboBox<Status> statusBox;
 	private JTextField userTxt;
 	private JTextField locTxt;
@@ -76,26 +80,14 @@ public class Add extends JDialog {
 		
 	};
 	
-	private final String[] MONTHS = {
-		"January", 
-		"February", 
-		"March", 
-		"April", 
-		"May", 
-		"June", 
-		"July", 
-		"August", 
-		"September", 
-		"October", 
-		"November", 
-		"December"
-	};
+	private JTextField modelTxt;
 	
 	/**
 	 * Create the frame.
 	 */
 	public Add() {
 		setTitle("Add New Device");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -120,7 +112,7 @@ public class Add extends JDialog {
 		GridBagLayout gbl_editPanel = new GridBagLayout();
 		gbl_editPanel.columnWidths = new int[]{0, 0, 0, 0, 0};
 		gbl_editPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_editPanel.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_editPanel.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
 		gbl_editPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		editPanel.setLayout(gbl_editPanel);
 		
@@ -172,7 +164,7 @@ public class Add extends JDialog {
 		modelTxt = new JTextField();
 		GridBagConstraints gbc_modelTxt = new GridBagConstraints();
 		gbc_modelTxt.gridwidth = 3;
-		gbc_modelTxt.insets = new Insets(0, 0, 5, 5);
+		gbc_modelTxt.insets = new Insets(0, 0, 5, 0);
 		gbc_modelTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_modelTxt.gridx = 1;
 		gbc_modelTxt.gridy = 2;
@@ -206,18 +198,21 @@ public class Add extends JDialog {
 		gbc_updateLbl.gridy = 4;
 		editPanel.add(updateLbl, gbc_updateLbl);
 		
-		yearTxt = new JTextField();
-		yearTxt.getDocument().addDocumentListener(docListen);
+		MaskFormatter yearForm = null;
+		try {
+			yearForm = new MaskFormatter("####");
+		} catch (ParseException e1) {}
+		
+		JFormattedTextField yearTxt = new JFormattedTextField(yearForm);
 		GridBagConstraints gbc_yearTxt = new GridBagConstraints();
 		gbc_yearTxt.insets = new Insets(0, 0, 5, 5);
 		gbc_yearTxt.fill = GridBagConstraints.HORIZONTAL;
 		gbc_yearTxt.gridx = 1;
 		gbc_yearTxt.gridy = 4;
 		editPanel.add(yearTxt, gbc_yearTxt);
-		yearTxt.setColumns(10);
 		
 		monthBox = new JComboBox<>();
-		monthBox.setModel(new DefaultComboBoxModel<String>(MONTHS));
+		monthBox.setModel(new DefaultComboBoxModel<String>(C.MONTHS));
 		monthBox.addActionListener(e -> 
 			saveBtn.setEnabled(true)
 		);
@@ -228,15 +223,14 @@ public class Add extends JDialog {
 		gbc_monthBox.gridy = 4;
 		editPanel.add(monthBox, gbc_monthBox);
 		
-		dateTxt = new JTextField();
-		dateTxt.getDocument().addDocumentListener(docListen);
-		GridBagConstraints gbc_dateTxt = new GridBagConstraints();
-		gbc_dateTxt.insets = new Insets(0, 0, 5, 0);
-		gbc_dateTxt.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dateTxt.gridx = 3;
-		gbc_dateTxt.gridy = 4;
-		editPanel.add(dateTxt, gbc_dateTxt);
-		dateTxt.setColumns(10);
+		JSpinner dateSpin = new JSpinner();
+		dateSpin.setModel(new SpinnerNumberModel(1, 1, 31, 1));
+		GridBagConstraints gbc_dateSpin = new GridBagConstraints();
+		gbc_dateSpin.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateSpin.insets = new Insets(0, 0, 5, 0);
+		gbc_dateSpin.gridx = 3;
+		gbc_dateSpin.gridy = 4;
+		editPanel.add(dateSpin, gbc_dateSpin);
 		
 		JLabel statusLbl = new JLabel("Status: ");
 		GridBagConstraints gbc_statusLbl = new GridBagConstraints();
@@ -337,7 +331,7 @@ public class Add extends JDialog {
 				LocalDate.of(
 					Integer.parseInt(yearTxt.getText().trim()), 
 					monthBox.getSelectedIndex() + 1, 
-					Integer.parseInt(dateTxt.getText().trim())));
+					(int) dateSpin.getValue()));
 			// Save Changes
 			Main.save(d);
 			// Rebuilt Table

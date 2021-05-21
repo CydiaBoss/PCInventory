@@ -3,6 +3,7 @@ package com.andrew.inv.manage.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 
 import javax.swing.Box;
 import javax.swing.JDialog;
@@ -27,6 +28,7 @@ public class OS extends JDialog {
 	 */
 	public OS(Device d) {
 		setType(Type.POPUP);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
 		setResizable(false);
 		// Setup
 		setTitle(d.getHost() + "'s OS Information");

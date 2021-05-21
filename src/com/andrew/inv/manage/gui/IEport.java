@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class IEport extends JDialog {
 	 */
 	public IEport() {
 		setTitle("Import & Export");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
