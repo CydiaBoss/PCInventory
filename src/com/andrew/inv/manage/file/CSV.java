@@ -88,8 +88,8 @@ public class CSV {
 	}
 	
 	// Options
-	public static final StandardOpenOption EDIT = StandardOpenOption.WRITE,
-										   ADD = StandardOpenOption.APPEND;
+	public static final StandardOpenOption[] EDIT = {StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING},
+											 ADD = {StandardOpenOption.WRITE, StandardOpenOption.APPEND};
 	
 	/**
 	 * Write to a File
@@ -104,7 +104,7 @@ public class CSV {
 		// Create an array of strings
 		ArrayList<String> row = new ArrayList<>();
 		// Transcribe
-		for(Device d : Main.devices)
+		for(Device d : Main.devices) 
 			row.add(
 				d.getHost() + "," + 
 				d.getSerial() + "," + 
@@ -115,7 +115,6 @@ public class CSV {
 				d.getStatus().name() + "," + 
 				d.getUser()
 			);
-		
 		// Write
 		Files.write(path, row, CSV.EDIT);
 	}

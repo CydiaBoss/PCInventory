@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.text.ParseException;
 import java.time.LocalDate;
 
@@ -85,24 +84,25 @@ public class Edit extends JDialog {
 	 */
 	public Edit(Device d) {
 		setTitle("Edit");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
+		setIconImages(C.ICONS);
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setBounds(100, 100, 450, 275);
+		setSize(450, 275);
+		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		Component verticalStrut = Box.createVerticalStrut(20);
+		Component verticalStrut = Box.createVerticalStrut(C.SPACING * 2);
 		contentPane.add(verticalStrut, BorderLayout.NORTH);
 		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
+		Component horizontalStrut = Box.createHorizontalStrut(C.SPACING * 2);
 		contentPane.add(horizontalStrut, BorderLayout.EAST);
 		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_1 = Box.createHorizontalStrut(C.SPACING * 2);
 		contentPane.add(horizontalStrut_1, BorderLayout.WEST);
 		
 		JPanel editPanel = new JPanel();
@@ -260,18 +260,18 @@ public class Edit extends JDialog {
 		contentPane.add(ctrlPanel, BorderLayout.SOUTH);
 		ctrlPanel.setLayout(new BorderLayout(0, 0));
 		
-		Component verticalStrut_2 = Box.createVerticalStrut(20);
+		Component verticalStrut_2 = Box.createVerticalStrut(C.SPACING * 2);
 		ctrlPanel.add(verticalStrut_2, BorderLayout.SOUTH);
 		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_2 = Box.createHorizontalStrut(C.SPACING * 2);
 		ctrlPanel.add(horizontalStrut_2, BorderLayout.WEST);
 		
-		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_3 = Box.createHorizontalStrut(C.SPACING * 2);
 		ctrlPanel.add(horizontalStrut_3, BorderLayout.EAST);
 		
 		JPanel btnPanel = new JPanel();
 		ctrlPanel.add(btnPanel, BorderLayout.CENTER);
-		btnPanel.setLayout(new GridLayout(1, 0, 50, 0));
+		btnPanel.setLayout(new GridLayout(1, 0, C.SPACING * 5, 0));
 		
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.addActionListener(e -> {
@@ -282,7 +282,31 @@ public class Edit extends JDialog {
 		// Delete Device From Database
 		JButton delBtn = new JButton("Delete");
 		delBtn.addActionListener(e -> {
-			JOptionPane.showConfirmDialog(this, "You are about to delete this device's record. Are you sure?", getTitle(), ALLBITS, ABORT);
+			int result = JOptionPane.showConfirmDialog(
+				this, 
+				"You are about to delete this device's record. Are you sure?", 
+				"Deletion Prompt", 
+				JOptionPane.YES_NO_CANCEL_OPTION, 
+				JOptionPane.WARNING_MESSAGE
+			);
+			// Delete
+			if(result == JOptionPane.YES_OPTION) {
+				// Successfully Removed
+				if(Main.devices.remove(d)) {
+					Main.save();
+					// Rebuild
+					Main.front.tableRebuild();
+				}else
+					JOptionPane.showConfirmDialog(
+						this, 
+						"Record Not Found", 
+						"Deletion Prompt", 
+						JOptionPane.OK_CANCEL_OPTION, 
+						JOptionPane.ERROR_MESSAGE
+					);
+				// Close
+				dispose();
+			}
 		});
 		btnPanel.add(delBtn);
 		

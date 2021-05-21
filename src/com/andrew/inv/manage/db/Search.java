@@ -15,29 +15,54 @@ import com.andrew.inv.manage.Main;
 public class Search {
 
 	/**
-	 * Searches the database for a device
+	 * Searches the database for a device with a host name
 	 * 
-	 * @param term
-	 * identifier
+	 * @param host
+	 * identifier (host name)
 	 */
-	public static void searchFor(String term) {
+	public static void searchFor(String host) {
 		// Ignore Cases
-		term = term.toLowerCase();
+		final String term = host.toLowerCase();
 		// Results Array
 		ArrayList<Device> results = new ArrayList<>();
-		boolean found = false;
-		// Search Through Hostnames
-		for(Device d : Main.devices) {
-			if(d.getHost().toLowerCase().contains(term)) {
-				results.add(d);
-				found = true;
-			}
-		}
+		// Look for
+		Main.devices.parallelStream().filter(dev -> {
+			if(dev.getHost().toLowerCase().contains(term)) 
+				return true;
+			else
+				return false;
+		}).forEach(dev -> 
+			results.add(dev)
+		);
 		// Rebuilt Table with Results If Results Found
-		if(!found)
-			JOptionPane.showMessageDialog(Main.front.getFrame(), "No Results Found");
+		if(results.size() == 0)
+			JOptionPane.showMessageDialog(Main.front.getFrame(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);
 		else
 			Main.front.tableRebuild(results);
 	}
 	
+	/**
+	 * Searches the database for a device with a host name
+	 * 
+	 * @param searchFor
+	 * Which parameters to look for
+	 * @param exclude
+	 * If the search should be exclusion or inclusion
+	 * @param term
+	 * Search terms
+	 */
+	public static void searchFor(boolean[] searchFor, boolean[] exclude, ArrayList<String> terms) {
+		// Search
+		Main.devices.parallelStream().filter(device -> {
+			boolean valid = true;
+			// TODO Add Other Properties
+			// Object[] deviceProp = {device.getHost(), device.getSerial(), device.getModel()};
+			for(int i = 0; i < searchFor.length; i++) {
+				// Skip if check box is false
+				if(!searchFor[i])
+					continue;
+			}
+			return valid;
+		});
+	}
 }

@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.text.ParseException;
 import java.time.LocalDate;
 
@@ -87,24 +86,25 @@ public class Add extends JDialog {
 	 */
 	public Add() {
 		setTitle("Add New Device");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
+		setIconImages(C.ICONS);
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setBounds(100, 100, 450, 325);
+		setSize(450, 325);
+		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		Component verticalStrut = Box.createVerticalStrut(20);
+		Component verticalStrut = Box.createVerticalStrut(C.SPACING * 2);
 		contentPane.add(verticalStrut, BorderLayout.NORTH);
 		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
+		Component horizontalStrut = Box.createHorizontalStrut(C.SPACING * 2);
 		contentPane.add(horizontalStrut, BorderLayout.EAST);
 		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_1 = Box.createHorizontalStrut(C.SPACING * 2);
 		contentPane.add(horizontalStrut_1, BorderLayout.WEST);
 		
 		JPanel editPanel = new JPanel();
@@ -294,18 +294,18 @@ public class Add extends JDialog {
 		contentPane.add(ctrlPanel, BorderLayout.SOUTH);
 		ctrlPanel.setLayout(new BorderLayout(0, 0));
 		
-		Component verticalStrut_2 = Box.createVerticalStrut(20);
+		Component verticalStrut_2 = Box.createVerticalStrut(C.SPACING * 2);
 		ctrlPanel.add(verticalStrut_2, BorderLayout.SOUTH);
 		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_2 = Box.createHorizontalStrut(C.SPACING * 2);
 		ctrlPanel.add(horizontalStrut_2, BorderLayout.WEST);
 		
-		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_3 = Box.createHorizontalStrut(C.SPACING * 2);
 		ctrlPanel.add(horizontalStrut_3, BorderLayout.EAST);
 		
 		JPanel btnPanel = new JPanel();
 		ctrlPanel.add(btnPanel, BorderLayout.CENTER);
-		btnPanel.setLayout(new GridLayout(1, 0, 100, 0));
+		btnPanel.setLayout(new GridLayout(1, 0, C.SPACING * 10, 0));
 		
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.addActionListener(e -> {

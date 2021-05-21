@@ -1,6 +1,8 @@
 package com.andrew.inv.manage;
 
+import java.awt.Image;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Constants
@@ -32,6 +34,11 @@ public class C {
 		"November", 
 		"December"
 	};
+	
+	/**
+	 * Icons
+	 */
+	public static final ArrayList<Image> ICONS = new ArrayList<>();
 
 	/**
 	 * Spacing for GUI

@@ -1,6 +1,7 @@
 package com.andrew.inv.manage;
 
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,6 +28,11 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		// Start up Processes
+		// Read Images
+		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon16.png")));
+		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon32.png")));
+		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon64.png")));
+		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon128.png")));
 		// File Check (Create if not existing)
 		if(!C.DAT.createNewFile())
 			// Read Data from CSV

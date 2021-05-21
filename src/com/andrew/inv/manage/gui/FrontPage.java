@@ -2,9 +2,9 @@ package com.andrew.inv.manage.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -21,24 +21,27 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableModel;
 
+import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Search;
-
-import javax.swing.table.DefaultTableModel;
 
 public class FrontPage {
 
 	private JFrame frm;
 	private JTextField searchBar;
 	private JTable resultDisplay;
+	
+	private AdvSearch advSearch;
 
 	/**
 	 * Create the application.
 	 */
 	public FrontPage() {
 		initialize();
+		advSearch = new AdvSearch();
 		frm.setVisible(true);
 	}
 
@@ -49,8 +52,10 @@ public class FrontPage {
 		// Create Frame
 		frm = new JFrame();
 		frm.setTitle("PC Inventory");
-		frm.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
-		frm.setBounds(100, 100, 450, 300);
+		frm.setIconImages(C.ICONS);
+		frm.setSize(600, 450);
+		frm.setMinimumSize(new Dimension(450, 300));
+		frm.setLocationRelativeTo(null);
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -59,19 +64,16 @@ public class FrontPage {
 		frm.getContentPane().add(searchPanel, BorderLayout.NORTH);
 		searchPanel.setLayout(new BorderLayout(0, 0));
 		
-		// Padding between the components
-		int searchSpacing = 10;
-		
-		Component verticalStrut = Box.createVerticalStrut(searchSpacing);
+		Component verticalStrut = Box.createVerticalStrut(C.SPACING);
 		searchPanel.add(verticalStrut, BorderLayout.NORTH);
 		
-		Component verticalStrut_1 = Box.createVerticalStrut(searchSpacing);
+		Component verticalStrut_1 = Box.createVerticalStrut(C.SPACING);
 		searchPanel.add(verticalStrut_1, BorderLayout.SOUTH);
 		
-		Component horizontalStrut = Box.createHorizontalStrut(searchSpacing);
+		Component horizontalStrut = Box.createHorizontalStrut(C.SPACING);
 		searchPanel.add(horizontalStrut, BorderLayout.WEST);
 		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(searchSpacing);
+		Component horizontalStrut_1 = Box.createHorizontalStrut(C.SPACING);
 		searchPanel.add(horizontalStrut_1, BorderLayout.EAST);
 		
 		JPanel searchSpace = new JPanel();
@@ -79,18 +81,15 @@ public class FrontPage {
 		searchSpace.setLayout(new BorderLayout(0, 0));
 		
 		searchBar = new JTextField();
-		searchBar.setToolTipText("Press Enter to Search");
+		searchBar.setToolTipText("Press Enter to Search for a Host Name");
 		searchSpace.add(searchBar, BorderLayout.CENTER);
 		searchBar.setColumns(10);
 		
-		JButton searchBtn = new JButton("Search");
-		searchBtn.addActionListener(e -> {
-			if(searchBar.getText().trim().equals("")) 
-				tableRebuild();
-			else
-				Search.searchFor(searchBar.getText().trim());
-		});
-		searchSpace.add(searchBtn, BorderLayout.EAST);
+		JButton advSearchBtn = new JButton("Advance Search");
+		advSearchBtn.addActionListener(e -> 
+			advSearch.setVisible(true, searchBar.getText().trim())
+		);
+		searchSpace.add(advSearchBtn, BorderLayout.EAST);
 		
 		// Setup Enter Detection
 		searchBar.addKeyListener(new KeyListener() {
@@ -98,8 +97,14 @@ public class FrontPage {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// Search on Enter Key
-				if(e.getKeyChar() == '\n')
-					searchBtn.doClick();
+				if(e.getKeyChar() == '\n') {
+					// Reset The Results to Main
+					if(searchBar.getText().trim().equals("")) 
+						tableRebuild();
+					// Search
+					else
+						Search.searchFor(searchBar.getText().trim());
+				}
 			}
 
 			@Override
@@ -110,10 +115,10 @@ public class FrontPage {
 			
 		});
 		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_2 = Box.createHorizontalStrut(C.SPACING * 2);
 		frm.getContentPane().add(horizontalStrut_2, BorderLayout.EAST);
 		
-		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_3 = Box.createHorizontalStrut(C.SPACING * 2);
 		frm.getContentPane().add(horizontalStrut_3, BorderLayout.WEST);
 		
 		// Display Results
@@ -184,21 +189,21 @@ public class FrontPage {
 		frm.getContentPane().add(ctrlPanel, BorderLayout.SOUTH);
 		ctrlPanel.setLayout(new BorderLayout(0, 0));
 		
-		Component verticalStrut_2 = Box.createVerticalStrut(searchSpacing);
+		Component verticalStrut_2 = Box.createVerticalStrut(C.SPACING);
 		ctrlPanel.add(verticalStrut_2, BorderLayout.NORTH);
 		
-		Component verticalStrut_3 = Box.createVerticalStrut(searchSpacing);
+		Component verticalStrut_3 = Box.createVerticalStrut(C.SPACING);
 		ctrlPanel.add(verticalStrut_3, BorderLayout.SOUTH);
 		
-		Component horizontalStrut_4 = Box.createHorizontalStrut(searchSpacing);
+		Component horizontalStrut_4 = Box.createHorizontalStrut(C.SPACING);
 		ctrlPanel.add(horizontalStrut_4, BorderLayout.WEST);
 		
-		Component horizontalStrut_5 = Box.createHorizontalStrut(searchSpacing);
+		Component horizontalStrut_5 = Box.createHorizontalStrut(C.SPACING);
 		ctrlPanel.add(horizontalStrut_5, BorderLayout.EAST);
 		
 		JPanel btnPanel = new JPanel();
 		ctrlPanel.add(btnPanel, BorderLayout.CENTER);
-		btnPanel.setLayout(new GridLayout(1, 0, 20, 0));
+		btnPanel.setLayout(new GridLayout(1, 0, C.SPACING * 2, 0));
 		
 		JButton newBtn = new JButton("Add");
 		newBtn.addActionListener(e -> 
