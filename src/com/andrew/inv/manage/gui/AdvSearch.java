@@ -6,22 +6,30 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.text.ParseException;
+import java.time.LocalDate;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.MaskFormatter;
 
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.db.Device.Status;
+import com.andrew.inv.manage.db.Search;
+
 import javax.swing.JCheckBox;
 import javax.swing.JToggleButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 public class AdvSearch extends JDialog {
 
@@ -34,9 +42,8 @@ public class AdvSearch extends JDialog {
 	private JTextField hostTxt;
 	private JTextField serialTxt;
 	private JTextField osTxt;
-	private JTextField yearTxt;
+	private JFormattedTextField yearTxt;
 	private JComboBox<String> monthBox;
-	private JTextField dateTxt;
 	private JComboBox<Status> statusBox;
 	private JTextField userTxt;
 	private JTextField locTxt;
@@ -105,7 +112,7 @@ public class AdvSearch extends JDialog {
 		GridBagLayout gbl_editPanel = new GridBagLayout();
 		gbl_editPanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_editPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_editPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
+		gbl_editPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_editPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		editPanel.setLayout(gbl_editPanel);
 		
@@ -289,7 +296,13 @@ public class AdvSearch extends JDialog {
 		gbc_dateTog.gridy = 4;
 		editPanel.add(dateTog, gbc_dateTog);
 		
-		yearTxt = new JTextField();
+		MaskFormatter yearForm = null;
+		try {
+			yearForm = new MaskFormatter("####");
+		} catch (ParseException e1) {}
+		
+		yearTxt = new JFormattedTextField(yearForm);
+		yearTxt.setText(C.DEFAULT_YEAR);
 		yearTxt.setEnabled(false);
 		yearTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_yearTxt = new GridBagConstraints();
@@ -313,16 +326,15 @@ public class AdvSearch extends JDialog {
 		gbc_monthBox.gridy = 4;
 		editPanel.add(monthBox, gbc_monthBox);
 		
-		dateTxt = new JTextField();
-		dateTxt.setEnabled(false);
-		dateTxt.getDocument().addDocumentListener(docListen);
-		GridBagConstraints gbc_dateTxt = new GridBagConstraints();
-		gbc_dateTxt.insets = new Insets(0, 0, 5, 0);
-		gbc_dateTxt.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dateTxt.gridx = 4;
-		gbc_dateTxt.gridy = 4;
-		editPanel.add(dateTxt, gbc_dateTxt);
-		dateTxt.setColumns(10);
+		JSpinner dateSpin = new JSpinner();
+		dateSpin.setEnabled(false);
+		dateSpin.setModel(new SpinnerNumberModel(1, 1, 31, 1));
+		GridBagConstraints gbc_dateSpin = new GridBagConstraints();
+		gbc_dateSpin.fill = GridBagConstraints.BOTH;
+		gbc_dateSpin.insets = new Insets(0, 0, 5, 0);
+		gbc_dateSpin.gridx = 4;
+		gbc_dateSpin.gridy = 4;
+		editPanel.add(dateSpin, gbc_dateSpin);
 		
 		// Enabler
 		dateCheck.addActionListener(e -> {
@@ -331,13 +343,13 @@ public class AdvSearch extends JDialog {
 				dateTog.setEnabled(true);
 				yearTxt.setEnabled(true);
 				monthBox.setEnabled(true);
-				dateTxt.setEnabled(true);
+				dateSpin.setEnabled(true);
 			// Disable
 			}else{
 				dateTog.setEnabled(false);
 				yearTxt.setEnabled(false);
 				monthBox.setEnabled(false);
-				dateTxt.setEnabled(false);
+				dateSpin.setEnabled(false);
 			}
 		});
 		
@@ -484,7 +496,7 @@ public class AdvSearch extends JDialog {
 		
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.addActionListener(e -> {
-			dispose();
+			setVisible(false);
 		});
 		btnPanel.add(cancelBtn);
 		
@@ -492,7 +504,43 @@ public class AdvSearch extends JDialog {
 		searchBtn = new JButton("Search");
 		searchBtn.setEnabled(false);
 		searchBtn.addActionListener(e -> {
-			
+			Search.searchFor(
+				// Should this property be checked?
+				new boolean[] {
+					hostCheck.isSelected(),
+					serialCheck.isSelected(),
+					modelCheck.isSelected(),
+					osCheck.isSelected(),
+					dateCheck.isSelected(),
+					statusCheck.isSelected(),
+					userCheck.isSelected(),
+					locCheck.isSelected()
+				// Exclude Mode?
+				}, new boolean[] {
+					hostTog.isSelected(),
+					serialTog.isSelected(),
+					modelTog.isSelected(),
+					osTog.isSelected(),
+					dateTog.isSelected(),
+					statusTog.isSelected(),
+					userTog.isSelected(),
+					locTog.isSelected()
+				// Values to look for
+				}, new String[] {
+					hostTxt.getText(),
+					serialTxt.getText(),
+					modelTxt.getText(),
+					osTxt.getText(),
+					LocalDate.of(
+						Integer.parseInt(yearTxt.getText()), 
+						monthBox.getSelectedIndex() + 1, 
+						(int) dateSpin.getValue()
+					).toString(),
+					((Status) statusBox.getSelectedItem()).name(),
+					userTxt.getText(),
+					locTxt.getText()
+				}
+			);
 		});
 		btnPanel.add(searchBtn);
 	}

@@ -18,6 +18,11 @@ public class C {
 	public static final File DAT = new File("data.csv");
 	
 	/**
+	 * Default Year
+	 */
+	public static final String DEFAULT_YEAR = "2020";
+	
+	/**
 	 * Months
 	 */
 	public static final String[] MONTHS = {

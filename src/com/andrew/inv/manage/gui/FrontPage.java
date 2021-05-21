@@ -284,4 +284,13 @@ public class FrontPage {
 		return frm;
 	}
 
+	/**
+	 * Returns the Frame
+	 * 
+	 * @return
+	 * The Frame
+	 */
+	public AdvSearch getAdvSearch() {
+		return advSearch;
+	}
 }
