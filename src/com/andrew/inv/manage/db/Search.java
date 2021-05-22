@@ -57,6 +57,7 @@ public class Search {
 		// Results Array
 		ArrayList<Device> results = new ArrayList<>();
 		// Search
+		// Why does parallel stream generate null results?
 		Main.devices.parallelStream().filter(device -> {
 			boolean valid = true;
 			// Device Properties

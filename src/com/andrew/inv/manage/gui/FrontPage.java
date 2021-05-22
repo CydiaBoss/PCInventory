@@ -266,13 +266,18 @@ public class FrontPage {
 		
 		for(int i = 0; i < devices.size(); i++) {
 			Device d = devices.get(i);
-			deviceData[i] = new Object[] {
-				d, 
-				d.getUser(), 
-				d.getModel(), 
-				d.getOS(), 
-				d.getStatus()
-			};
+			try {
+				deviceData[i] = new Object[] {
+					d, 
+					d.getUser(), 
+					d.getModel(), 
+					d.getOS(), 
+					d.getStatus()
+				};
+			// Skip Random Null Values (idk how to fix)
+			}catch(NullPointerException e) {
+				continue;
+			}
 		}
 		
 		// Push for Update

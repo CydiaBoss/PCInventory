@@ -91,12 +91,12 @@ public class Device {
 		// Assign the correct variables
 		this.host = host;
 		// Prevent Emptiness 
-		if(SERIAL.trim().equals(""))
+		if(SERIAL.trim().equals("") || SERIAL == null)
 			this.SERIAL = "?";
 		else
 			this.SERIAL = SERIAL;
 		// Prevent Emptiness 
-		if(MODEL.trim().equals(""))
+		if(MODEL.trim().equals("") || MODEL == null)
 			this.MODEL = "?";
 		else
 			this.MODEL = MODEL;
@@ -136,7 +136,7 @@ public class Device {
 	 */
 	public void setOS(String newOS, LocalDate date) {
 		// Prevent Emptiness 
-		if(newOS.trim().equals(""))
+		if(newOS.trim().equals("") || newOS == null)
 			os = "?";
 		else
 			os = newOS;
@@ -165,7 +165,7 @@ public class Device {
 	 */
 	public void setUser(String user) {
 		// Prevent Emptiness 
-		if(user.trim().equals(""))
+		if(user.trim().equals("") || user == null)
 			this.user = "?";
 		else
 			this.user = user;
@@ -189,7 +189,7 @@ public class Device {
 	 */
 	public void setLoc(String location) {
 		// Prevent Emptiness 
-		if(location.trim().equals(""))
+		if(location.trim().equals("") || location == null)
 			this.location = "?";
 		else
 			this.location = location;
