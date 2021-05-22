@@ -1,0 +1,11 @@
+Status Options,Status Description
+INUSE,In Use
+LOANER,Loaner Computer
+REASSIGN,To Be Reassigned
+REIMAGE,To Be Reimaged
+RENAME,To Be Renamed
+WIPE,To Be Wiped
+IST,Sent to IST
+HOME,Home Computer
+FAULTY,Faulty
+TEMP,Temporary Reassigned

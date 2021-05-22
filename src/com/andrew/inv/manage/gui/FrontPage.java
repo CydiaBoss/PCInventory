@@ -169,6 +169,10 @@ public class FrontPage {
 					int col = resultDisplay.getSelectedColumn(),
 						row = resultDisplay.getSelectedRow();
 					switch(col) {
+						// PC Information Column
+						case 0:
+							new Info((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+							break;
 						// OS Column
 						case 3: 
 							new OS((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
@@ -263,7 +267,11 @@ public class FrontPage {
 		for(int i = 0; i < devices.size(); i++) {
 			Device d = devices.get(i);
 			deviceData[i] = new Object[] {
-				d, d.getUser(), d.getModel(), d.getOS(), d.getStatus()
+				d, 
+				d.getUser(), 
+				d.getModel(), 
+				d.getOS(), 
+				d.getStatus()
 			};
 		}
 		

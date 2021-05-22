@@ -60,20 +60,20 @@ public class Device {
 						 MODEL;
 						 
 	// Default is Other
-	private String host,
-				   os = "Other";
+	private String host = "?",
+				   os = "?";
 	
 	// Default is Today's Date
 	private LocalDate dateUpdated = LocalDate.now();
 	
 	// Default is Unknown
-	private String location = "Unknown";
+	private String location = "?";
 	
 	// Default status is "in use"
 	private Status status = Status.INUSE;
 	
 	// User
-	private String user = "Free";
+	private String user = "?";
 	
 	/**
 	 * Creates a device object
@@ -90,8 +90,16 @@ public class Device {
 	public Device(String host, final String SERIAL, final String MODEL) {
 		// Assign the correct variables
 		this.host = host;
-		this.SERIAL = SERIAL;
-		this.MODEL = MODEL;
+		// Prevent Emptiness 
+		if(SERIAL.trim().equals(""))
+			this.SERIAL = "?";
+		else
+			this.SERIAL = SERIAL;
+		// Prevent Emptiness 
+		if(MODEL.trim().equals(""))
+			this.MODEL = "?";
+		else
+			this.MODEL = MODEL;
 	}
 
 	public String getHost() {
@@ -127,7 +135,11 @@ public class Device {
 	 * Date of Update
 	 */
 	public void setOS(String newOS, LocalDate date) {
-		os = newOS;
+		// Prevent Emptiness 
+		if(newOS.trim().equals(""))
+			os = "?";
+		else
+			os = newOS;
 		dateUpdated = date;
 	}
 
@@ -152,7 +164,11 @@ public class Device {
 	 * The New User
 	 */
 	public void setUser(String user) {
-		this.user = user;
+		// Prevent Emptiness 
+		if(user.trim().equals(""))
+			this.user = "?";
+		else
+			this.user = user;
 	}
 
 	/**
@@ -172,10 +188,12 @@ public class Device {
 	 * the location
 	 */
 	public void setLoc(String location) {
-		this.location = location;
+		// Prevent Emptiness 
+		if(location.trim().equals(""))
+			this.location = "?";
+		else
+			this.location = location;
 	}
-	
-	
 	
 	/**
 	 * Overridden toString()

@@ -66,7 +66,7 @@ public class CSV {
 			// Quote Detection Ends
 			if(cell.endsWith("\"") && inQuote) {
 				// Add Text (Remove Quote Mark)
-				cells.add(tempCell + "," + cell.substring(0, cell.length() - 2));
+				cells.add(tempCell + "," + cell.substring(0, cell.length() - 1));
 				// Reset
 				tempCell = "";
 				inQuote = false;
@@ -74,16 +74,22 @@ public class CSV {
 			}else if(inQuote) {
 				// Append
 				tempCell += "," + cell;
+			// Just one term with quotation marks
+			}else if(cell.startsWith("\"") && cell.endsWith("\"")) {
+				cells.add(cell.substring(1, cell.length() - 1));
 			// Quote Detection Start
 			}else if(cell.startsWith("\"")) {
 				inQuote = true;
 				// (Remove Quote Mark)
-				tempCell = cell.substring(1, cell.length() - 1);
+				tempCell = cell.substring(1);
 			// Otherwise, add normally
-			}else {
-				cells.add(cell.trim());
+			}else {cells.add(cell.trim());
+				
 			}
 		}
+		// Insert Buffer
+		cells.add("");
+		// Return Results
 		return cells;
 	}
 	
