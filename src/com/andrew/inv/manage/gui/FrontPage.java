@@ -27,6 +27,7 @@ import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Search;
+import com.andrew.inv.manage.db.Sort;
 
 public class FrontPage {
 
@@ -35,6 +36,8 @@ public class FrontPage {
 	private JTable resultDisplay;
 	
 	private AdvSearch advSearch;
+	
+	private ArrayList<Device> currentData = Main.devices;
 
 	/**
 	 * Create the application.
@@ -186,6 +189,24 @@ public class FrontPage {
 			}
 		});
 		
+		// Add Sorting Function to Table Header
+		resultDisplay.getTableHeader().addMouseListener(new MouseAdapter() {
+			// Store Sort Mode 
+			private boolean[] ascendingMode = {true, true, true, true, true};
+			// On Mouse Click Event
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// Get Column
+				int header = resultDisplay.columnAtPoint(e.getPoint());
+				// Do Sort
+				currentData.sort(new Sort(header, ascendingMode[header]));
+				// Switch Modes
+				ascendingMode[header] = !ascendingMode[header];
+				// Rebuild
+				tableRebuild(currentData);
+			}
+		});
+		
 		scrollPane.setViewportView(resultDisplay);
 		
 		// Control Panel with Button
@@ -261,6 +282,8 @@ public class FrontPage {
 	 * The Devices to Display
 	 */
 	public void tableRebuild(ArrayList<Device> devices) {
+		// Update Current Results
+		currentData = devices;
 		// Setup Data for Table
 		Object[][] deviceData = new Object[devices.size()][5];
 		
