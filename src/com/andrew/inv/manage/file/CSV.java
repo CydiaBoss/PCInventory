@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 
@@ -20,6 +21,16 @@ import com.andrew.inv.manage.db.Device.Status;
  */
 public class CSV {
 
+	// Column Location
+	public static final int HOST = 0,
+							SERIAL = 1,
+							MODEL = 2,
+							OS = 3,
+							DATE = 4,
+							LOC = 5,
+							STAT = 6,
+							USER = 7;
+	
 	/**
 	 * Imports data from a CSV file
 	 * 
@@ -34,22 +45,26 @@ public class CSV {
 		try {
 			// Go thru each row
 			Files.lines(path).forEach(row -> {
+				// Ignore Header Row
+				if(row.equals(C.HEADER)) 
+					return;
+				// Start Processing
 				ArrayList<String> data = parseRow(row);
 				// Adds a new device with its Host, Serial, Model
-				Device currDevice = new Device(data.get(0), data.get(1), data.get(2));
+				Device currDevice = new Device(data.get(HOST), data.get(SERIAL), data.get(MODEL));
 				// Set OS
-				currDevice.setOS(data.get(3), LocalDate.parse(data.get(4)));
+				currDevice.setOS(data.get(OS), LocalDate.parse(data.get(DATE)));
 				// Set Location
-				currDevice.setLoc(data.get(5));
+				currDevice.setLoc(data.get(LOC));
 				// Set Status
-				currDevice.setStatus(Status.valueOf(data.get(6)));
+				currDevice.setStatus(Status.valueOf(data.get(STAT)));
 				// Set User
-				currDevice.setUser(data.get(7));
+				currDevice.setUser(data.get(USER));
 				// Add
 				devices.add(currDevice);
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Bad File Detected");
 			return null;
 		}
 		// Device Return
@@ -109,6 +124,8 @@ public class CSV {
 	public static void exportData(Path path) throws IOException {
 		// Create an array of strings
 		ArrayList<String> row = new ArrayList<>();
+		// Add Header Row
+		row.add(C.HEADER);
 		// Transcribe
 		for(Device d : Main.devices) 
 			row.add(
