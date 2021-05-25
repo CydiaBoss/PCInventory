@@ -9,8 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -37,7 +37,7 @@ public class FrontPage {
 	
 	private AdvSearch advSearch;
 	
-	private ArrayList<Device> currentData = Main.devices;
+	private List<Device> currentData = Main.devices;
 
 	/**
 	 * Create the application.
@@ -281,7 +281,7 @@ public class FrontPage {
 	 * @param devices
 	 * The Devices to Display
 	 */
-	public void tableRebuild(ArrayList<Device> devices) {
+	public void tableRebuild(List<Device> devices) {
 		// Update Current Results
 		currentData = devices;
 		// Setup Data for Table
@@ -289,18 +289,17 @@ public class FrontPage {
 		
 		for(int i = 0; i < devices.size(); i++) {
 			Device d = devices.get(i);
-			try {
-				deviceData[i] = new Object[] {
-					d, 
-					d.getUser(), 
-					d.getModel(), 
-					d.getOS(), 
-					d.getStatus()
-				};
-			// Skip Random Null Values (idk how to fix)
-			}catch(NullPointerException e) {
+			// Catches null Devices
+			if(d == null)
 				continue;
-			}
+			// Build
+			deviceData[i] = new Object[] {
+				d, 
+				d.getUser(), 
+				d.getModel(), 
+				d.getOS(), 
+				d.getStatus()
+			};
 		}
 		
 		// Push for Update

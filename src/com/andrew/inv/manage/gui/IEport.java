@@ -9,7 +9,10 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -134,6 +137,20 @@ public class IEport extends JDialog {
 			 * Serial
 			 */
 			private static final long serialVersionUID = 32428736498239L;
+			
+			/**
+			 * Ensure File Ending Exists
+			 */
+			@Override
+			public File getSelectedFile() {
+				// Get Selected File
+				File selFile = super.getSelectedFile();
+				// Detect File Ext. and Add if needed
+				if(selFile == null || selFile.getName().endsWith(".csv"))
+					return selFile;
+				else
+					return new File(selFile.getAbsolutePath() + ".csv");
+			}
 		
 		};
 		
@@ -157,19 +174,6 @@ public class IEport extends JDialog {
 		gbc_inFileBtn.gridy = 1;
 		iePanel.add(inFileBtn, gbc_inFileBtn);
 		
-		// Set Up Enabler
-		ActionListener radioBtns = e -> {
-			if(importBtn.isSelected() || exportBtn.isSelected()) {
-				inFileTxt.setEnabled(true);
-				inFileBtn.setEnabled(true);
-			}else{
-				inFileTxt.setEnabled(false);
-				inFileBtn.setEnabled(false);
-			}
-		};
-		importBtn.addActionListener(radioBtns);
-		exportBtn.addActionListener(radioBtns);
-		
 		JPanel ctrlPanel = new JPanel();
 		contentPane.add(ctrlPanel, BorderLayout.SOUTH);
 		ctrlPanel.setLayout(new BorderLayout(0, 0));
@@ -185,13 +189,48 @@ public class IEport extends JDialog {
 		
 		JPanel btnPanel = new JPanel();
 		ctrlPanel.add(btnPanel, BorderLayout.CENTER);
-		btnPanel.setLayout(new GridLayout(1, 0, C.SPACING * 10, 0));
+		btnPanel.setLayout(new GridLayout(1, 0, 25, 0));
 		
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.addActionListener(e -> 
 			dispose()
 		);
 		btnPanel.add(cancelBtn);
+
+		JButton templateBtn = new JButton("Get Template");
+		templateBtn.setEnabled(false);
+		templateBtn.addActionListener(e -> {
+			// Prompt
+			int result = JOptionPane.showConfirmDialog(
+				this, 
+				"Fill out this CSV File without modifying the header to import successfully.\n"
+				+ "Are you ready to receive the template?", 
+				"Getting Template", 
+				JOptionPane.YES_NO_CANCEL_OPTION, 
+				JOptionPane.INFORMATION_MESSAGE
+			);
+			// Actions
+			if(result == JOptionPane.YES_OPTION) 
+				if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+					try {
+						// Save Template
+						Files.copy(
+							Paths.get(IEport.class.getResource("/template.csv").toURI()), 
+							Paths.get(fileChooser.getSelectedFile().getAbsolutePath()), 
+							StandardCopyOption.REPLACE_EXISTING,
+							StandardCopyOption.COPY_ATTRIBUTES
+						);
+						// Also save Status Options for Reference
+						Files.copy(
+							Paths.get(IEport.class.getResource("/status_opts.csv").toURI()), 
+							Paths.get(fileChooser.getSelectedFile().getParent() + File.separatorChar + "status_opts.csv"), 
+							StandardCopyOption.REPLACE_EXISTING,
+							StandardCopyOption.COPY_ATTRIBUTES
+						);
+					} catch (IOException | URISyntaxException e1) {}
+			// Otherwise do nothing
+		});
+		btnPanel.add(templateBtn);
 		
 		JButton startBtn = new JButton("Start");
 		startBtn.addActionListener(e -> {
@@ -220,10 +259,29 @@ public class IEport extends JDialog {
 			// Close
 			dispose();
 		});
+		
 		// Default Off
 		startBtn.setEnabled(false);
 		btnPanel.add(startBtn);
 
+		// Set Up Enabler
+		ActionListener radioBtns = e -> {
+			if(importBtn.isSelected() || exportBtn.isSelected()) {
+				// Enable the Template Button
+				if(importBtn.isSelected())
+					templateBtn.setEnabled(true);
+				else
+					templateBtn.setEnabled(false);
+				inFileTxt.setEnabled(true);
+				inFileBtn.setEnabled(true);
+			}else{
+				inFileTxt.setEnabled(false);
+				inFileBtn.setEnabled(false);
+			}
+		};
+		importBtn.addActionListener(radioBtns);
+		exportBtn.addActionListener(radioBtns);
+		
 		// Document Listener
 		inFileTxt.getDocument().addDocumentListener(new DocumentListener() {
 

@@ -18,8 +18,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
 
 import com.andrew.inv.manage.C;
@@ -48,37 +46,6 @@ public class AdvSearch extends JDialog {
 	private JTextField userTxt;
 	private JTextField locTxt;
 	private JButton searchBtn;
-
-	/**
-	 * Main {@link DocumentListener} for all text fields
-	 */
-	private DocumentListener docListen = new DocumentListener() {
-
-		// All updates are redirected to the same method
-		
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			valueChange();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			valueChange();
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			valueChange();
-		}
-		
-		/**
-		 * Handles Text Updates
-		 */
-		private void valueChange() {
-			searchBtn.setEnabled(true);
-		}
-		
-	};
 
 	private JTextField modelTxt;
 	
@@ -133,7 +100,6 @@ public class AdvSearch extends JDialog {
 		editPanel.add(hostTog, gbc_hostTog);
 		
 		hostTxt = new JTextField();
-		hostTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_hostTxt = new GridBagConstraints();
 		gbc_hostTxt.gridwidth = 3;
 		gbc_hostTxt.insets = new Insets(0, 0, 5, 0);
@@ -151,6 +117,7 @@ public class AdvSearch extends JDialog {
 				hostTxt.setEnabled(true);
 			// Disable
 			}else{
+				hostTog.setSelected(false);
 				hostTog.setEnabled(false);
 				hostTxt.setEnabled(false);
 			}
@@ -174,7 +141,6 @@ public class AdvSearch extends JDialog {
 		
 		serialTxt = new JTextField();
 		serialTxt.setEnabled(false);
-		serialTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_serialTxt = new GridBagConstraints();
 		gbc_serialTxt.gridwidth = 3;
 		gbc_serialTxt.insets = new Insets(0, 0, 5, 0);
@@ -192,6 +158,7 @@ public class AdvSearch extends JDialog {
 				serialTxt.setEnabled(true);
 			// Disable
 			}else{
+				serialTog.setSelected(false);
 				serialTog.setEnabled(false);
 				serialTxt.setEnabled(false);
 			}
@@ -215,7 +182,6 @@ public class AdvSearch extends JDialog {
 		
 		modelTxt = new JTextField();
 		modelTxt.setEnabled(false);
-		modelTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_modelTxt = new GridBagConstraints();
 		gbc_modelTxt.gridwidth = 3;
 		gbc_modelTxt.insets = new Insets(0, 0, 5, 0);
@@ -233,6 +199,7 @@ public class AdvSearch extends JDialog {
 				modelTxt.setEnabled(true);
 			// Disable
 			}else{
+				modelTog.setSelected(false);
 				modelTog.setEnabled(false);
 				modelTxt.setEnabled(false);
 			}
@@ -257,7 +224,6 @@ public class AdvSearch extends JDialog {
 
 		osTxt = new JTextField();
 		osTxt.setEnabled(false);
-		osTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_osTxt = new GridBagConstraints();
 		gbc_osTxt.gridwidth = 3;
 		gbc_osTxt.insets = new Insets(0, 0, 5, 0);
@@ -275,6 +241,7 @@ public class AdvSearch extends JDialog {
 				osTxt.setEnabled(true);
 			// Disable
 			}else{
+				osTog.setSelected(false);
 				osTog.setEnabled(false);
 				osTxt.setEnabled(false);
 			}
@@ -304,7 +271,6 @@ public class AdvSearch extends JDialog {
 		yearTxt = new JFormattedTextField(yearForm);
 		yearTxt.setText(C.DEFAULT_YEAR);
 		yearTxt.setEnabled(false);
-		yearTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_yearTxt = new GridBagConstraints();
 		gbc_yearTxt.insets = new Insets(0, 0, 5, 5);
 		gbc_yearTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -346,6 +312,7 @@ public class AdvSearch extends JDialog {
 				dateSpin.setEnabled(true);
 			// Disable
 			}else{
+				dateTog.setSelected(false);
 				dateTog.setEnabled(false);
 				yearTxt.setEnabled(false);
 				monthBox.setEnabled(false);
@@ -391,6 +358,7 @@ public class AdvSearch extends JDialog {
 				statusBox.setEnabled(true);
 			// Disable
 			}else{
+				statusTog.setSelected(false);
 				statusTog.setEnabled(false);
 				statusBox.setEnabled(false);
 			}
@@ -414,7 +382,6 @@ public class AdvSearch extends JDialog {
 		
 		userTxt = new JTextField();
 		userTxt.setEnabled(false);
-		userTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_userTxt = new GridBagConstraints();
 		gbc_userTxt.gridwidth = 3;
 		gbc_userTxt.insets = new Insets(0, 0, 5, 0);
@@ -432,6 +399,7 @@ public class AdvSearch extends JDialog {
 				userTxt.setEnabled(true);
 			// Disable
 			}else{
+				userTog.setSelected(false);
 				userTog.setEnabled(false);
 				userTxt.setEnabled(false);
 			}
@@ -455,7 +423,6 @@ public class AdvSearch extends JDialog {
 		
 		locTxt = new JTextField();
 		locTxt.setEnabled(false);
-		locTxt.getDocument().addDocumentListener(docListen);
 		GridBagConstraints gbc_locTxt = new GridBagConstraints();
 		gbc_locTxt.gridwidth = 3;
 		gbc_locTxt.fill = GridBagConstraints.HORIZONTAL;
@@ -472,6 +439,7 @@ public class AdvSearch extends JDialog {
 				locTxt.setEnabled(true);
 			// Disable
 			}else{
+				locTog.setSelected(false);
 				locTog.setEnabled(false);
 				locTxt.setEnabled(false);
 			}
@@ -502,7 +470,6 @@ public class AdvSearch extends JDialog {
 		
 		// Save Button is Default Disabled
 		searchBtn = new JButton("Search");
-		searchBtn.setEnabled(false);
 		searchBtn.addActionListener(e -> {
 			Search.searchFor(
 				// Should this property be checked?

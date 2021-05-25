@@ -56,9 +56,14 @@ public class Search {
 	public static void searchFor(boolean[] searchFor, boolean[] exclude, String[] terms) {
 		// Results Array
 		ArrayList<Device> results = new ArrayList<>();
+		// Cleanup Logic
+		for(int h = 0; h < searchFor.length; h++)
+			// If Include and Blank, Ignore This Field
+			if(searchFor[h] && !exclude[h] && terms[h].trim().equals(""))
+				searchFor[h] = false;
 		// Search
-		// Why does parallel stream generate null results?
-		Main.devices.parallelStream().filter(device -> {
+		// Use stream for thread safe
+		Main.devices.stream().filter(device -> {
 			boolean valid = true;
 			// Device Properties
 			Object[] deviceProp = {
@@ -129,9 +134,13 @@ public class Search {
 			// Return Results
 			return valid;
 		// Compile
-		}).forEach(dev -> 
-			results.add(dev)
-		);
+		}).forEach(dev -> {
+			// If null, skip
+			if(dev == null)
+				return;
+			else
+				results.add(dev);
+		});
 		// Rebuilt Table with Results If Results Found
 		if(results.size() == 0)
 			JOptionPane.showMessageDialog(Main.front.getAdvSearch(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);

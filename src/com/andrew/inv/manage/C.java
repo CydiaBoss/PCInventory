@@ -40,6 +40,16 @@ public class C {
 		"December"
 	};
 	
+	public static final String HEADER = 
+		"Host Name," + 
+		"Serial #," + 
+		"Model," + 
+		"OS," + 
+		"Date of Update (YYYY-MM-DD)," + 
+		"Current Location," + 
+		"Status," + 
+		"Current User";
+	
 	/**
 	 * Icons
 	 */
