@@ -54,7 +54,7 @@ public class FrontPage {
 	private void initialize() {
 		// Create Frame
 		frm = new JFrame();
-		frm.setTitle("PC Inventory");
+		frm.setTitle((Main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]");
 		frm.setIconImages(C.ICONS);
 		frm.setSize(600, 450);
 		frm.setMinimumSize(new Dimension(450, 300));

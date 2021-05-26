@@ -2,11 +2,14 @@ package com.andrew.inv.manage;
 
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.file.CSV;
@@ -26,8 +29,30 @@ public class Main {
 	// Device Database
 	public static ArrayList<Device> devices = null;
 	
-	public static void main(String[] args) throws IOException {
+	// Dangerous Mode (Database Unsafe)
+	private static boolean safe = true;
+	
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		// Start up Processes
+		// Fix GUI Looks
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		// Ensure File Safety
+		File lock = new File(".lock.tmp");
+		if(!lock.createNewFile()) {
+			// Not Safe
+			safe = false;
+			if(JOptionPane.showConfirmDialog(
+				null, 
+				"Multiple instances of this program are running at once.\n"
+				+ "This may lead to database corruption. Continue?", 
+				"Multi-Run Detected!", 
+				JOptionPane.YES_NO_CANCEL_OPTION, 
+				JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION)
+					System.exit(0);
+		// Create File Lock
+		}else{
+			lock.deleteOnExit();
+		}
 		// Read Images
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon16.png")));
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon32.png")));
@@ -40,7 +65,6 @@ public class Main {
 		// Launch GUI
 		EventQueue.invokeLater(() -> {
 			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				front = new FrontPage();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -48,6 +72,16 @@ public class Main {
 		});
 	}
 
+	/**
+	 * If the current state of the program is safe
+	 * 
+	 * @return
+	 * Safety of Program
+	 */
+	public static boolean isSafe() {
+		return safe;
+	}
+	
 	/**
 	 * Updated the data file
 	 */

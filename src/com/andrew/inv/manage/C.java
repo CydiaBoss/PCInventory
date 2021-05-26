@@ -2,6 +2,7 @@ package com.andrew.inv.manage;
 
 import java.awt.Image;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -19,8 +20,9 @@ public class C {
 	
 	/**
 	 * Default Year
+	 * (Current Year)
 	 */
-	public static final String DEFAULT_YEAR = "2020";
+	public static final String DEFAULT_YEAR = LocalDate.now().getYear() + "";
 	
 	/**
 	 * Months
