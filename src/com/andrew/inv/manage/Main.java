@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class Main {
 			safe = false;
 			if(JOptionPane.showConfirmDialog(
 				null, 
-				"Multiple instances of this program are running at once.\n"
+				"Someone else is running this program right now.\n"
 				+ "This may lead to database corruption. Continue?", 
 				"Multi-Run Detected!", 
 				JOptionPane.YES_NO_CANCEL_OPTION, 
@@ -51,6 +52,8 @@ public class Main {
 					System.exit(0);
 		// Create File Lock
 		}else{
+			// Hide Lock
+			Files.setAttribute(Paths.get(lock.getAbsolutePath()), "dos:hidden", true);
 			lock.deleteOnExit();
 		}
 		// Read Images

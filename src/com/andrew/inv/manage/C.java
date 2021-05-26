@@ -42,6 +42,9 @@ public class C {
 		"December"
 	};
 	
+	/**
+	 * Headers
+	 */
 	public static final String HEADER = 
 		"Host Name," + 
 		"Serial #," + 

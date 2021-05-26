@@ -1,5 +1,6 @@
 package com.andrew.inv.manage.db;
 
+import java.awt.Color;
 import java.time.LocalDate;
 
 /**
@@ -17,23 +18,33 @@ public class Device {
 	 */
 	public enum Status {
 		
-		INUSE("In Use"),
+		INUSE("In Use", new Color(198, 255, 179)),				// GREEN
 		LOANER("Loaner Computer"),
 		REASSIGN("To Be Reassigned"),
 		REIMAGE("To Be Reimaged"),
 		RENAME("To Be Renamed"),
 		WIPE("To Be Wiped"),
-		IST("Sent to IST"),
+		IST("Sent to IST", new Color(128, 212, 255)), 			// BLUE
 		HOME("Home Computer"),
-		FAULTY("Faulty"),
-		TEMP("Temporary Reassigned");
+		FAULTY("Faulty", new Color(255, 179, 179)), 			// RED
+		TEMP("Temporary Reassigned", new Color(255, 255, 128)); // YELLOW
 		
 		// The message
 		private final String MSG;
 		
+		// Colour of Table
+		private final Color COL;
+		
 		// The Status
 		Status(final String MSG) {
 			this.MSG = MSG;
+			this.COL = Color.WHITE;
+		}
+		
+		// The Status
+		Status(final String MSG, final Color COL) {
+			this.MSG = MSG;
+			this.COL = COL;
 		}
 		
 		/**
@@ -44,6 +55,16 @@ public class Device {
 		 */
 		public String getMsg() {
 			return MSG;
+		}
+		
+		/**
+		 * Return the Colour
+		 * 
+		 * @return
+		 * The colour
+		 */
+		public Color getColour() {
+			return COL;
 		}
 		
 		/**

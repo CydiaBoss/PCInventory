@@ -86,7 +86,7 @@ public class Search {
 					// If Property is a String
 					if(deviceProp[i] instanceof String) {
 						// If String equal (exclude)
-						if(((String) deviceProp[i]).contains(terms[i])) {
+						if(((String) deviceProp[i]).toLowerCase().contains(terms[i].toLowerCase())) {
 							valid = false;
 							break;
 						}
@@ -110,7 +110,7 @@ public class Search {
 					// If Property is a String
 					if(deviceProp[i] instanceof String) {
 						// If String not equal (exclude)
-						if(!((String) deviceProp[i]).contains(terms[i])) {
+						if(!((String) deviceProp[i]).toLowerCase().contains(terms[i].toLowerCase())) {
 							valid = false;
 							break;
 						}

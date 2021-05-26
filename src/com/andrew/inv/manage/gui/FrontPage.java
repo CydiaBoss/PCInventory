@@ -21,6 +21,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.andrew.inv.manage.C;
@@ -285,6 +286,7 @@ public class FrontPage {
 		// Update Current Results
 		currentData = devices;
 		// Setup Data for Table
+		// TODO Fixed set storage
 		Object[][] deviceData = new Object[devices.size()][5];
 		
 		for(int i = 0; i < devices.size(); i++) {
@@ -303,10 +305,30 @@ public class FrontPage {
 		}
 		
 		// Push for Update
-		EventQueue.invokeLater(() -> 
+		EventQueue.invokeLater(() -> {
 			// Update Table
-			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS))
-		);
+			resultDisplay.setModel(new DefaultTableModel(deviceData, HEADERS));
+			// Colour
+			resultDisplay.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+
+				/**
+				 * Serial
+				 */
+				private static final long serialVersionUID = -97356007888202796L;
+				
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+					// Get cell from super class
+					Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					// Colour Modification (Not Selected)
+					if(!isSelected)
+						cell.setBackground(((Device.Status) deviceData[row][4]).getColour());
+					// Return
+					return cell;
+				}
+				
+			});
+		});
 	}
 	
 	/**
