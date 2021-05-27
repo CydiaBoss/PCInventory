@@ -15,6 +15,7 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
+import com.andrew.inv.manage.db.Device.Status;
 import com.andrew.inv.manage.db.Search;
 import com.andrew.inv.manage.db.Sort;
 
@@ -172,19 +174,44 @@ public class FrontPage {
 				if(e.getClickCount() == 2) {
 					int col = resultDisplay.getSelectedColumn(),
 						row = resultDisplay.getSelectedRow();
+					// Get Device
+					Device d = (Device) resultDisplay.getModel().getValueAt(row, 0);
+					
 					switch(col) {
 						// PC Information Column
 						case 0:
-							new Info((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+							JOptionPane.showMessageDialog(
+								frm, 
+								"Host Name: " + d.getHost() + 
+								"\nSerial #: " + d.getSerial(), 
+								d.getHost().toUpperCase() + "'s PC Information", 
+								JOptionPane.PLAIN_MESSAGE
+							);
 							break;
 						// OS Column
 						case 3: 
-							new OS((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+							JOptionPane.showMessageDialog(
+								frm, 
+								"OS: " + d.getOS() + 
+								"\nDate Updated #: " + d.getDateUpdated(), 
+								d.getHost().toUpperCase() + "'s OS Information", 
+								JOptionPane.PLAIN_MESSAGE
+							);
 							break;
 						// Status Column
-						case 4:
-							new Status((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+						case 4: {
+							if(d.getStatus() != Status.IST)
+								JOptionPane.showMessageDialog(
+									frm, 
+									"Status: " + d.getStatus() + 
+									"\nCurrent Location #: " + d.getLoc(), 
+									d.getHost().toUpperCase() + "'s Current Status", 
+									JOptionPane.PLAIN_MESSAGE
+								);
+							else
+								new ISTStatus((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
 							break;
+						}
 					}
 				}
 			}

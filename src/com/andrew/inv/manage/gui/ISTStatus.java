@@ -14,24 +14,24 @@ import javax.swing.border.EmptyBorder;
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.db.Device;
 
-public class Info extends JDialog {
+public class ISTStatus extends JDialog {
 
 	/**
 	 * Serial
 	 */
-	private static final long serialVersionUID = 72879699768897L;
+	private static final long serialVersionUID = 328209274339574732L;
 	
 	private JPanel contentPane;
 
 	/**
 	 * Create the frame.
 	 */
-	public Info(Device d) {
+	public ISTStatus(Device d) {
 		setType(Type.POPUP);
 		setIconImages(C.ICONS);
 		setResizable(false);
 		// Setup
-		setTitle(d.getHost() + "'s Information");
+		setTitle("Status Information");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setSize(300, 150);
@@ -57,11 +57,11 @@ public class Info extends JDialog {
 		contentPane.add(infoPanel, BorderLayout.CENTER);
 		infoPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JLabel osLbl = new JLabel("Host Name: " + d.getHost());
-		infoPanel.add(osLbl);
+		JLabel statusLbl = new JLabel("Status: " + d.getStatus());
+		infoPanel.add(statusLbl);
 		
-		JLabel dateLbl = new JLabel("Serial #: " + d.getSerial());
-		infoPanel.add(dateLbl);
+		JLabel locLbl = new JLabel("Current Location: " + d.getLoc());
+		infoPanel.add(locLbl);
 	}
 
 }

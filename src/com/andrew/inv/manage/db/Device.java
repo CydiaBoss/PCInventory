@@ -18,16 +18,16 @@ public class Device {
 	 */
 	public enum Status {
 		
-		INUSE("In Use", new Color(198, 255, 179)),				// GREEN
-		LOANER("Loaner Computer"),
-		REASSIGN("To Be Reassigned"),
-		REIMAGE("To Be Reimaged"),
-		RENAME("To Be Renamed"),
-		WIPE("To Be Wiped"),
-		IST("Sent to IST", new Color(128, 212, 255)), 			// BLUE
-		HOME("Home Computer"),
+		INUSE("In Use"),				
+		LOANER("Loaner Computer", new Color(128, 212, 255)),	// BLUE
+		REASSIGN("To Be Reassigned", new Color(198, 255, 179)),	// GREEN
+		REIMAGE("To Be Reimaged", new Color(198, 255, 179)),	// GREEN
+		RENAME("To Be Renamed", new Color(198, 255, 179)),		// GREEN
+		WIPE("To Be Wiped", new Color(255, 230, 128)),			// ORANGE
+		IST("Sent to IST", new Color(255, 230, 128)), 			// ORANGE
+		HOME("Home Computer", new Color(255, 255, 128)),		// YELLOW
 		FAULTY("Faulty", new Color(255, 179, 179)), 			// RED
-		TEMP("Temporary Reassigned", new Color(255, 255, 128)); // YELLOW
+		TEMP("Temporary Reassigned", new Color(243, 216, 229)); // GREY-ISH RED
 		
 		// The message
 		private final String MSG;
