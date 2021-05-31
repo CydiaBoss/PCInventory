@@ -53,7 +53,8 @@ public class C {
 		"Date of Update (YYYY-MM-DD)," + 
 		"Current Location," + 
 		"Status," + 
-		"Current User";
+		"Current User," +
+		"Notes";
 	
 	/**
 	 * Icons

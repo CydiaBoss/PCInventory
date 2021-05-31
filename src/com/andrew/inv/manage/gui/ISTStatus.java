@@ -3,15 +3,20 @@ package com.andrew.inv.manage.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.Box;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 import com.andrew.inv.manage.C;
+import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 
 public class ISTStatus extends JDialog {
@@ -34,15 +39,12 @@ public class ISTStatus extends JDialog {
 		setTitle("Status Information");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setSize(300, 150);
+		setSize(300, 230);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
-		Component verticalStrut = Box.createVerticalStrut(C.SPACING * 2);
-		contentPane.add(verticalStrut, BorderLayout.NORTH);
 		
 		Component verticalStrut_1 = Box.createVerticalStrut(C.SPACING * 2);
 		contentPane.add(verticalStrut_1, BorderLayout.SOUTH);
@@ -57,11 +59,58 @@ public class ISTStatus extends JDialog {
 		contentPane.add(infoPanel, BorderLayout.CENTER);
 		infoPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
+		JPanel lblPanel = new JPanel();
+		infoPanel.add(lblPanel);
+		lblPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		
 		JLabel statusLbl = new JLabel("Status: " + d.getStatus());
-		infoPanel.add(statusLbl);
+		lblPanel.add(statusLbl);
 		
 		JLabel locLbl = new JLabel("Current Location: " + d.getLoc());
-		infoPanel.add(locLbl);
+		lblPanel.add(locLbl);
+		
+		JPanel notePanel = new JPanel();
+		infoPanel.add(notePanel);
+		notePanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel infoLbl = new JLabel("Notes: ");
+		notePanel.add(infoLbl, BorderLayout.NORTH);
+		
+		JTextPane note = new JTextPane();
+		note.setText(d.getNote());
+		note.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		notePanel.add(note, BorderLayout.CENTER);
+		
+		this.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {}
+
+			// Update the text within the database
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// Add Note
+				d.setNote(note.getText());
+				// Save
+				Main.save();
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {}
+
+			@Override
+			public void windowIconified(WindowEvent e) {}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {}
+
+			@Override
+			public void windowActivated(WindowEvent e) {}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {}
+			
+		});
 	}
 
 }

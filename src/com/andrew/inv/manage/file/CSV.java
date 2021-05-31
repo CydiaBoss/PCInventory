@@ -5,7 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
@@ -29,7 +32,8 @@ public class CSV {
 							DATE = 4,
 							LOC = 5,
 							STAT = 6,
-							USER = 7;
+							USER = 7,
+							NOTE = 8;
 	
 	/**
 	 * Imports data from a CSV file
@@ -60,11 +64,23 @@ public class CSV {
 				currDevice.setStatus(Status.valueOf(data.get(STAT)));
 				// Set User
 				currDevice.setUser(data.get(USER));
+				// Add Note if there is one (length 9 + buffer)
+				if(data.size() >= 9)
+					currDevice.setNote(data.get(NOTE).replaceAll("\\\\n", "\n"));
 				// Add
 				devices.add(currDevice);
 			});
-		} catch (IOException e) {
-			System.err.println("Bad File Detected");
+		} catch (IOException | ArrayIndexOutOfBoundsException | DateTimeParseException e) {
+			JOptionPane.showMessageDialog(
+				null, 
+				"File Corruption Detected.\n" +
+				"Please repair or delete file to regain functionality.", 
+				"File Corruption", 
+				JOptionPane.ERROR_MESSAGE
+			);
+			// Crash
+			System.exit(-1);
+			// Return I guess
 			return null;
 		}
 		// Device Return
@@ -136,7 +152,8 @@ public class CSV {
 				d.getDateUpdated().toString() + "," + 
 				d.getLoc() + "," + 
 				d.getStatus().name() + "," + 
-				d.getUser()
+				d.getUser() + "," +
+				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\""
 			);
 		// Write
 		Files.write(path, row, CSV.EDIT);
@@ -166,10 +183,11 @@ public class CSV {
 				d.getDateUpdated().toString() + "," + 
 				d.getLoc() + "," + 
 				d.getStatus().name() + "," + 
-				d.getUser()
+				d.getUser() + "," +
+				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\"" // Replaces \n so no interference here
 			);
 		
 		// Write
 		Files.write(path, row, CSV.ADD);
 	}
-} 
+}

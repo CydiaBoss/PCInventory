@@ -82,7 +82,8 @@ public class Device {
 						 
 	// Default is Other
 	private String host = "?",
-				   os = "?";
+				   os = "?",
+				   note = "";
 	
 	// Default is Today's Date
 	private LocalDate dateUpdated = LocalDate.now();
@@ -143,6 +144,14 @@ public class Device {
 		return os;
 	}
 	
+	public String getNote() {
+		return note;
+	}
+	
+	public void setNote(String note) {
+		this.note = note;
+	}
+	
 	public LocalDate getDateUpdated() {
 		return dateUpdated;
 	}
@@ -170,6 +179,9 @@ public class Device {
 
 	public void setStatus(Status status) {
 		this.status = status;
+		// Erase Note if not Sent to IST
+		if(status == Status.IST) 
+			note = "";
 	}
 
 	/**
