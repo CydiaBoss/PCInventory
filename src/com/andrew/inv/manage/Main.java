@@ -3,6 +3,7 @@ package com.andrew.inv.manage;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.FontUIResource;
 
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.file.CSV;
@@ -36,7 +38,7 @@ public class Main {
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		// Start up Processes
 		// Fix GUI Looks
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		setGUI();
 		// Ensure File Safety
 		File lock = new File(".lock.tmp");
 		if(!lock.createNewFile()) {
@@ -64,17 +66,48 @@ public class Main {
 		// File Check (Create if not existing)
 		if(!C.DAT.createNewFile())
 			// Read Data from CSV
-			devices = CSV.importData(Paths.get(C.DAT.getAbsolutePath()));
+			try {
+				devices = CSV.importData(Paths.get(C.DAT.getAbsolutePath()));
+			}catch (FileNotFoundException e) {
+				// Bad File
+				JOptionPane.showMessageDialog(
+					null, 
+					"File Corruption Detected.\n" +
+					"Please repair or delete data.csv to regain functionality.", 
+					"File Corruption", 
+					JOptionPane.ERROR_MESSAGE
+				);
+				// Crash
+				System.exit(-1);
+			}
+		// New File Database
+		else
+			devices = new ArrayList<>();
 		// Launch GUI
 		EventQueue.invokeLater(() -> {
 			try {
 				front = new FrontPage();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {}
 		});
 	}
 
+	/**
+	 * Set GUI Values
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws UnsupportedLookAndFeelException
+	 */
+	private static void setGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		// Fix GUI Looks
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		// Change Font for all
+		for(Object key : UIManager.getLookAndFeel().getDefaults().keySet()) 
+			if(UIManager.get(key) instanceof FontUIResource)
+				UIManager.put(key, new FontUIResource(C.DEFAULT_FONT));
+	}
+	
 	/**
 	 * If the current state of the program is safe
 	 * 

@@ -1,14 +1,13 @@
 package com.andrew.inv.manage.file;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
 
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
@@ -43,8 +42,11 @@ public class CSV {
 	 * 
 	 * @return
 	 * Data
+	 * 
+	 * @throws FileNotFoundException 
+	 * Thrown when file is bad
 	 */
-	public static ArrayList<Device> importData(Path path) {
+	public static ArrayList<Device> importData(Path path) throws FileNotFoundException {
 		ArrayList<Device> devices = new ArrayList<>();
 		try {
 			// Go thru each row
@@ -70,18 +72,9 @@ public class CSV {
 				// Add
 				devices.add(currDevice);
 			});
-		} catch (IOException | ArrayIndexOutOfBoundsException | DateTimeParseException e) {
-			JOptionPane.showMessageDialog(
-				null, 
-				"File Corruption Detected.\n" +
-				"Please repair or delete file to regain functionality.", 
-				"File Corruption", 
-				JOptionPane.ERROR_MESSAGE
-			);
-			// Crash
-			System.exit(-1);
-			// Return I guess
-			return null;
+		} catch (IOException | ArrayIndexOutOfBoundsException | DateTimeException e) {
+			// Throws File Bad Exception
+			throw new FileNotFoundException();
 		}
 		// Device Return
 		return devices;

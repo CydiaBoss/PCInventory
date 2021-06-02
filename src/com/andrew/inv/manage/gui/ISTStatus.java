@@ -11,7 +11,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -76,10 +78,17 @@ public class ISTStatus extends JDialog {
 		JLabel infoLbl = new JLabel("Notes: ");
 		notePanel.add(infoLbl, BorderLayout.NORTH);
 		
-		JTextPane note = new JTextPane();
+		JScrollPane noteScroll = new JScrollPane();
+		noteScroll.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		noteScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		noteScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		notePanel.add(noteScroll, BorderLayout.CENTER);
+		
+		JTextArea note = new JTextArea();
+		note.setWrapStyleWord(true);
+		note.setLineWrap(true);
+		noteScroll.setViewportView(note);
 		note.setText(d.getNote());
-		note.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		notePanel.add(note, BorderLayout.CENTER);
 		
 		this.addWindowListener(new WindowListener() {
 

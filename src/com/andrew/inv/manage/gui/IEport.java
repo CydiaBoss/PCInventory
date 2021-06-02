@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -239,11 +240,18 @@ public class IEport extends JDialog {
 			// Check for Import or Export
 			if(importBtn.isSelected()) {
 				// Reads File and Uploads
-				Main.save(CSV.importData(Paths.get(inFileTxt.getText())));
-				// Rebuilds Table
-				Main.front.tableRebuild();
-				// Confirmation Message
-				JOptionPane.showMessageDialog(this, "Data was imported.");
+				try {
+					Main.save(CSV.importData(Paths.get(inFileTxt.getText())));
+					// Rebuilds Table
+					Main.front.tableRebuild();
+					// Confirmation Message
+					JOptionPane.showMessageDialog(this, "Data was imported.");
+				} catch (FileNotFoundException e1) {
+					// File is Bad
+					JOptionPane.showMessageDialog(this, "File is formatted incorrectly. Unable to import.");
+					// Stop and return
+					return;
+				}
 			}else{
 				try {
 					// Creates the File

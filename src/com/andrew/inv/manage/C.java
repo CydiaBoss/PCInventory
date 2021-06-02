@@ -1,5 +1,6 @@
 package com.andrew.inv.manage;
 
+import java.awt.Font;
 import java.awt.Image;
 import java.io.File;
 import java.time.LocalDate;
@@ -55,6 +56,11 @@ public class C {
 		"Status," + 
 		"Current User," +
 		"Notes";
+	
+	/**
+	 * GUI Default Font
+	 */
+	public static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 11);
 	
 	/**
 	 * Icons
