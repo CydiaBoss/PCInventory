@@ -17,7 +17,7 @@ public class C {
 	/**
 	 * Data File
 	 */
-	public static final File DAT = new File("data.csv");
+	public static final File DAT = new File(".data.pcdb");
 	
 	/**
 	 * Default Year

@@ -32,15 +32,50 @@ public class Main {
 	// Device Database
 	public static ArrayList<Device> devices = null;
 	
+	// Current File
+	private static File currentMain = null;
+	
+	// File to Import
+	private static File importFile = null;
+	
 	// Dangerous Mode (Database Unsafe)
 	private static boolean safe = true;
+	
+	// Not Main 
+	private static boolean main = true;
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		// Start up Processes
 		// Fix GUI Looks
 		setGUI();
+		// Select Main File
+		if(args.length == 1) {
+			// File Creation
+			File openWithFile = new File(args[0]);
+			// Check Type
+			// If .pcdb, open selected inventory
+			if(openWithFile.getName().endsWith(".pcdb")) {
+				currentMain = openWithFile;
+				main = false;
+			// If .csv, ask if they want to import
+			}else if(openWithFile.getName().endsWith(".csv")) {
+				currentMain = C.DAT;
+				importFile = openWithFile;
+			// Error Otherwise
+			}else{
+				JOptionPane.showMessageDialog(
+					null, 
+					"PC Inventory cannot open file " + openWithFile.getName(), 
+					"Cannot Open File", 
+					JOptionPane.ERROR_MESSAGE
+				);
+				// Close
+				System.exit(-1);
+			}
+		}else
+			currentMain = C.DAT;
 		// Ensure File Safety
-		File lock = new File(".lock.tmp");
+		File lock = new File("." + ((main)? "" : currentMain.getName()) + "lock.tmp");
 		if(!lock.createNewFile()) {
 			// Not Safe
 			safe = false;
@@ -55,7 +90,7 @@ public class Main {
 		// Create File Lock
 		}else{
 			// Hide Lock
-			Files.setAttribute(Paths.get(lock.getAbsolutePath()), "dos:hidden", true);
+			Files.setAttribute(Paths.get(lock.toURI()), "dos:hidden", true);
 			lock.deleteOnExit();
 		}
 		// Read Images
@@ -64,10 +99,10 @@ public class Main {
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon64.png")));
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon128.png")));
 		// File Check (Create if not existing)
-		if(!C.DAT.createNewFile())
+		if(!currentMain.createNewFile())
 			// Read Data from CSV
 			try {
-				devices = CSV.importData(Paths.get(C.DAT.getAbsolutePath()));
+				devices = CSV.importData(Paths.get(currentMain.toURI()));
 			}catch (FileNotFoundException e) {
 				// Bad File
 				JOptionPane.showMessageDialog(
@@ -81,12 +116,34 @@ public class Main {
 				System.exit(-1);
 			}
 		// New File Database
-		else
+		else{
+			// Make Main pcdb Hidden
+			Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
 			devices = new ArrayList<>();
+		}
 		// Launch GUI
 		EventQueue.invokeLater(() -> {
 			try {
 				front = new FrontPage();
+				// Attempt File Import if Required
+				if(importFile != null) {
+					// Confirm
+					int result = JOptionPane.showConfirmDialog(
+						front.getFrame(), 
+						importFile.getName() + " is about to be imported into the main database.\n" +
+						"Continue?", 
+						"Data Import Confirmation", 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE
+					);
+					// Import File
+					if(result == JOptionPane.YES_OPTION) {
+						// Save
+						save(CSV.importData(Paths.get(importFile.toURI())));
+						// Rebuild
+						front.tableRebuild();
+					}
+				}
 			} catch (Exception e) {}
 		});
 	}
@@ -119,12 +176,32 @@ public class Main {
 	}
 	
 	/**
+	 * If the current program is using the main database or not
+	 * 
+	 * @return
+	 * Safety of Program
+	 */
+	public static boolean isMain() {
+		return main;
+	}
+	
+	/**
+	 * Get Current File that is opened
+	 * 
+	 * @return
+	 * Current File
+	 */
+	public static File getMainFile() {
+		return currentMain;
+	}
+	
+	/**
 	 * Updated the data file
 	 */
 	public static void save() {
 		// Edit
 		try {
-			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()));
+			CSV.exportData(Paths.get(currentMain.toURI()));
 		} catch (IOException e) {}
 	}
 	
@@ -157,7 +234,7 @@ public class Main {
 		
 		// Append
 		try {
-			CSV.exportData(Paths.get(C.DAT.getAbsolutePath()), d);
+			CSV.exportData(Paths.get(currentMain.toURI()), d);
 		} catch (IOException e) {}
 	}
 }

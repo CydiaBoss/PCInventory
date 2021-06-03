@@ -16,7 +16,7 @@ import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
 
 /**
- * CSV Sheet Management
+ * CSV (PCDB) Sheet Management
  * 
  * @author andre
  *
