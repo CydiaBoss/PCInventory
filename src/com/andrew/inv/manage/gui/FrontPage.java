@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.EventObject;
 import java.util.List;
 
@@ -31,6 +32,9 @@ import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
 import com.andrew.inv.manage.db.Search;
 import com.andrew.inv.manage.db.Sort;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 
 public class FrontPage {
 
@@ -282,6 +286,62 @@ public class FrontPage {
 			new IEport().setVisible(true)
 		);
 		btnPanel.add(ixBtn);
+		
+		// Menu Bar
+		JMenuBar menuBar = new JMenuBar();
+		frm.setJMenuBar(menuBar);
+		
+		// Menus
+		
+		JMenu fileMenu = new JMenu("File");
+		menuBar.add(fileMenu);
+		
+		JMenuItem newMenuItem = new JMenuItem("New Database");
+		fileMenu.add(newMenuItem);
+		
+		JMenuItem openMenuItem = new JMenuItem("Open Database");
+		fileMenu.add(openMenuItem);
+		
+		JMenu editMenu = new JMenu("Edit");
+		menuBar.add(editMenu);
+		
+		JMenuItem renameMenuItem = new JMenuItem("Rename Database");
+		// Do not allow renaming if default database is being used at the moment
+		if(Main.isMain()) {
+			renameMenuItem.setEnabled(false);
+			renameMenuItem.setToolTipText("Cannot rename default database");
+		}else
+			renameMenuItem.addActionListener(e -> {
+				String newName = JOptionPane.showInputDialog(
+					frm, 
+					// Remove .pcdb
+					"Rename " + Main.getMainFile().getName().substring(0, Main.getMainFile().getName().length() - 5) + " to:", 
+					"Rename To", 
+					JOptionPane.PLAIN_MESSAGE
+				);
+				// Not Cancelled or Empty
+				if(newName != null && newName.length() > 0) {
+					// Determine Path
+					String parentPath = Main.getMainFile().getParent();
+					Main.getMainFile().renameTo(new File( ((parentPath != null)? parentPath + File.separator : "") + newName + ".pcdb"));
+					// Update File
+					// TODO Allow File Name Change in Main Class
+//					frm.setTitle(
+//						((Main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]") + 
+//						((Main.isMain())? "" : " [" + Main.getMainFile().getName() + "]")
+//					);
+				}
+			});
+		editMenu.add(renameMenuItem);
+		
+		JMenu toolsMenu = new JMenu("Tools");
+		menuBar.add(toolsMenu);
+		
+		JMenuItem lockMenuItem = new JMenuItem("Lock Database");
+		toolsMenu.add(lockMenuItem);
+		
+		JMenuItem settingsMenuItem = new JMenuItem("Settings");
+		toolsMenu.add(settingsMenuItem);
 		
 		// Add List Selection Listener
 		resultDisplay.getSelectionModel().addListSelectionListener(e -> {
