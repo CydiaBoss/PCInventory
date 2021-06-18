@@ -22,13 +22,13 @@ public class Search {
 	 * @param host
 	 * identifier (host name)
 	 */
-	public static void searchFor(String host) {
+	public static void searchFor(Main main, String host) {
 		// Ignore Cases
 		final String term = host.toLowerCase();
 		// Results Array
 		ArrayList<Device> results = new ArrayList<>();
 		// Look for
-		Main.devices.parallelStream().filter(dev -> {
+		main.getDevices().parallelStream().filter(dev -> {
 			if(dev.getHost().toLowerCase().contains(term)) 
 				return true;
 			else
@@ -38,9 +38,9 @@ public class Search {
 		);
 		// Rebuilt Table with Results If Results Found
 		if(results.size() == 0)
-			JOptionPane.showMessageDialog(Main.front.getFrame(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(main.getFront().getFrame(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);
 		else
-			Main.front.tableRebuild(results);
+			main.getFront().tableRebuild(results);
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class Search {
 	 * @param term
 	 * Search terms
 	 */
-	public static void searchFor(boolean[] searchFor, boolean[] exclude, String[] terms) {
+	public static void searchFor(Main main, boolean[] searchFor, boolean[] exclude, String[] terms) {
 		// Results Array
 		ArrayList<Device> results = new ArrayList<>();
 		// Cleanup Logic
@@ -63,7 +63,7 @@ public class Search {
 				searchFor[h] = false;
 		// Search
 		// Use stream for thread safe
-		Main.devices.stream().filter(device -> {
+		main.getDevices().stream().filter(device -> {
 			boolean valid = true;
 			// Device Properties
 			Object[] deviceProp = {
@@ -143,11 +143,11 @@ public class Search {
 		});
 		// Rebuilt Table with Results If Results Found
 		if(results.size() == 0)
-			JOptionPane.showMessageDialog(Main.front.getAdvSearch(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(main.getFront().getAdvSearch(), "No Results Found", "Search Error", JOptionPane.INFORMATION_MESSAGE);
 		else {
-			Main.front.tableRebuild(results);
+			main.getFront().tableRebuild(results);
 			// Hide Again
-			Main.front.getAdvSearch().setVisible(false);
+			main.getFront().getAdvSearch().setVisible(false);
 		}
 	}
 }

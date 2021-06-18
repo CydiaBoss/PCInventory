@@ -84,7 +84,7 @@ public class Add extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public Add() {
+	public Add(Main main) {
 		setTitle("Add New Device");
 		setIconImages(C.ICONS);
 		setType(Type.POPUP);
@@ -333,9 +333,9 @@ public class Add extends JDialog {
 					monthBox.getSelectedIndex() + 1, 
 					(int) dateSpin.getValue()));
 			// Save Changes
-			Main.save(d);
+			main.save(d);
 			// Rebuilt Table
-			Main.front.tableRebuild();
+			main.getFront().tableRebuild();
 			// Close
 			dispose();
 		});

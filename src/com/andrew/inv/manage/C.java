@@ -66,7 +66,7 @@ public class C {
 	 * Icons
 	 */
 	public static final ArrayList<Image> ICONS = new ArrayList<>();
-
+	
 	/**
 	 * Spacing for GUI
 	 */

@@ -33,7 +33,7 @@ public class ISTStatus extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public ISTStatus(Device d) {
+	public ISTStatus(Main main, Device d) {
 		setType(Type.POPUP);
 		setIconImages(C.ICONS);
 		setResizable(false);
@@ -101,7 +101,7 @@ public class ISTStatus extends JDialog {
 				// Add Note
 				d.setNote(note.getText());
 				// Save
-				Main.save();
+				main.save();
 			}
 
 			@Override

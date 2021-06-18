@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.andrew.inv.manage.C;
-import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 
 import com.andrew.inv.manage.db.Device.Status;
@@ -122,37 +121,6 @@ public class CSV {
 											 ADD = {StandardOpenOption.WRITE, StandardOpenOption.APPEND};
 	
 	/**
-	 * Write to a File
-	 * 
-	 * @param path
-	 * The File
-	 * 
-	 * @throws IOException
-	 * Error
-	 */
-	public static void exportData(Path path) throws IOException {
-		// Create an array of strings
-		ArrayList<String> row = new ArrayList<>();
-		// Add Header Row
-		row.add(C.HEADER);
-		// Transcribe
-		for(Device d : Main.devices) 
-			row.add(
-				d.getHost() + "," + 
-				d.getSerial() + "," + 
-				d.getModel() + "," + 
-				d.getOS() + "," + 
-				d.getDateUpdated().toString() + "," + 
-				d.getLoc() + "," + 
-				d.getStatus().name() + "," + 
-				d.getUser() + "," +
-				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\""
-			);
-		// Write
-		Files.write(path, row, CSV.EDIT);
-	}
-	
-	/**
 	 * Append to a File
 	 * 
 	 * @param path
@@ -166,6 +134,8 @@ public class CSV {
 	public static void exportData(Path path, ArrayList<Device> devices) throws IOException {
 		// Create an array of strings
 		ArrayList<String> row = new ArrayList<>();
+		// Add Header Row
+		row.add(C.HEADER);
 		// Transcribe
 		for(Device d : devices)
 			row.add(

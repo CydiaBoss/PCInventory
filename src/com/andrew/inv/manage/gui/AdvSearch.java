@@ -12,22 +12,22 @@ import java.time.LocalDate;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import com.andrew.inv.manage.C;
+import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device.Status;
 import com.andrew.inv.manage.db.Search;
-
-import javax.swing.JCheckBox;
-import javax.swing.JToggleButton;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 public class AdvSearch extends JDialog {
 
@@ -52,7 +52,7 @@ public class AdvSearch extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public AdvSearch() {
+	public AdvSearch(Main main) {
 		setTitle("Advance Search");
 		setIconImages(C.ICONS);
 		setType(Type.POPUP);
@@ -472,6 +472,7 @@ public class AdvSearch extends JDialog {
 		searchBtn = new JButton("Search");
 		searchBtn.addActionListener(e -> {
 			Search.searchFor(
+				main,
 				// Should this property be checked?
 				new boolean[] {
 					hostCheck.isSelected(),

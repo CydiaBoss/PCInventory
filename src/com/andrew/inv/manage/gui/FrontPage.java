@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.EventObject;
 import java.util.List;
 
@@ -35,6 +34,8 @@ import com.andrew.inv.manage.db.Sort;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import java.awt.SystemColor;
+import javax.swing.ImageIcon;
 
 public class FrontPage {
 
@@ -44,14 +45,21 @@ public class FrontPage {
 	
 	private AdvSearch advSearch;
 	
-	private List<Device> currentData = Main.devices;
+	// Main Thread
+	private Main main;
+	
+	private List<Device> currentData;
 
 	/**
 	 * Create the application.
 	 */
-	public FrontPage() {
+	public FrontPage(Main m) {
+		// Setup
+		main = m;
+		currentData = m.getDevices();
+		// Start Correct Processes
 		initialize();
-		advSearch = new AdvSearch();
+		advSearch = new AdvSearch(m);
 		frm.setVisible(true);
 	}
 
@@ -62,8 +70,8 @@ public class FrontPage {
 		// Create Frame
 		frm = new JFrame();
 		frm.setTitle(
-			((Main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]") + 
-			((Main.isMain())? "" : " [" + Main.getMainFile().getName() + "]")
+			((main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]") + 
+			((main.isMain())? "" : " [" + main.getMainFile().getName() + "]")
 		);
 		frm.setIconImages(C.ICONS);
 		frm.setSize(600, 450);
@@ -116,7 +124,7 @@ public class FrontPage {
 						tableRebuild();
 					// Search
 					else
-						Search.searchFor(searchBar.getText().trim());
+						Search.searchFor(main, searchBar.getText().trim());
 				}
 			}
 
@@ -216,7 +224,7 @@ public class FrontPage {
 									JOptionPane.PLAIN_MESSAGE
 								);
 							else
-								new ISTStatus((Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
+								new ISTStatus(main, (Device) resultDisplay.getModel().getValueAt(row, 0)).setVisible(true);
 							break;
 						}
 					}
@@ -267,14 +275,14 @@ public class FrontPage {
 		
 		JButton newBtn = new JButton("Add");
 		newBtn.addActionListener(e -> 
-			new Add().setVisible(true)
+			new Add(main).setVisible(true)
 		);
 		btnPanel.add(newBtn);
 		
 		// Edit Button -> Default Unselected
 		JButton editBtn = new JButton("Edit");
 		editBtn.addActionListener(e -> 
-			new Edit((Device) resultDisplay.getModel()
+			new Edit(main, (Device) resultDisplay.getModel()
 										   .getValueAt(resultDisplay.getSelectedRow(), 0))
 										   .setVisible(true)
 		);
@@ -283,12 +291,13 @@ public class FrontPage {
 		
 		JButton ixBtn = new JButton("Import/Export");
 		ixBtn.addActionListener(e -> 
-			new IEport().setVisible(true)
+			new IEport(main).setVisible(true)
 		);
 		btnPanel.add(ixBtn);
 		
 		// Menu Bar
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBackground(SystemColor.menu);
 		frm.setJMenuBar(menuBar);
 		
 		// Menus
@@ -297,17 +306,20 @@ public class FrontPage {
 		menuBar.add(fileMenu);
 		
 		JMenuItem newMenuItem = new JMenuItem("New Database");
+		newMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/file-new.png")));
 		fileMenu.add(newMenuItem);
 		
 		JMenuItem openMenuItem = new JMenuItem("Open Database");
+		openMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/file-open.png")));
 		fileMenu.add(openMenuItem);
 		
 		JMenu editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
 		
 		JMenuItem renameMenuItem = new JMenuItem("Rename Database");
+		renameMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/edit-rename.png")));
 		// Do not allow renaming if default database is being used at the moment
-		if(Main.isMain()) {
+		if(main.isMain()) {
 			renameMenuItem.setEnabled(false);
 			renameMenuItem.setToolTipText("Cannot rename default database");
 		}else
@@ -315,21 +327,21 @@ public class FrontPage {
 				String newName = JOptionPane.showInputDialog(
 					frm, 
 					// Remove .pcdb
-					"Rename " + Main.getMainFile().getName().substring(0, Main.getMainFile().getName().length() - 5) + " to:", 
+					"Rename " + main.getMainFile().getName().substring(0, main.getMainFile().getName().length() - 5) + " to:", 
 					"Rename To", 
 					JOptionPane.PLAIN_MESSAGE
 				);
 				// Not Cancelled or Empty
 				if(newName != null && newName.length() > 0) {
 					// Determine Path
-					String parentPath = Main.getMainFile().getParent();
-					Main.getMainFile().renameTo(new File( ((parentPath != null)? parentPath + File.separator : "") + newName + ".pcdb"));
+					main.renameFile(newName);
 					// Update File
-					// TODO Allow File Name Change in Main Class
-//					frm.setTitle(
-//						((Main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]") + 
-//						((Main.isMain())? "" : " [" + Main.getMainFile().getName() + "]")
-//					);
+					EventQueue.invokeLater(() -> 
+						frm.setTitle(
+							((main.isSafe())? "PC Inventory" : "PC Inventory [UNSAFE]") + 
+							((main.isMain())? "" : " [" + main.getMainFile().getName() + "]")
+						)
+					);
 				}
 			});
 		editMenu.add(renameMenuItem);
@@ -338,9 +350,11 @@ public class FrontPage {
 		menuBar.add(toolsMenu);
 		
 		JMenuItem lockMenuItem = new JMenuItem("Lock Database");
+		lockMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/tools-lock.png")));
 		toolsMenu.add(lockMenuItem);
 		
 		JMenuItem settingsMenuItem = new JMenuItem("Settings");
+		settingsMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/tools-settings.png")));
 		toolsMenu.add(settingsMenuItem);
 		
 		// Add List Selection Listener
@@ -363,7 +377,7 @@ public class FrontPage {
 	 * Rebuilds the table with Main Database
 	 */
 	public void tableRebuild() {
-		tableRebuild(Main.devices);
+		tableRebuild(main.getDevices());
 	}
 	
 	/**

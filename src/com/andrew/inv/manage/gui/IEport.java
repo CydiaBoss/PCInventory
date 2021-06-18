@@ -48,7 +48,7 @@ public class IEport extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public IEport() {
+	public IEport(Main main) {
 		setTitle("Import & Export");
 		setIconImages(C.ICONS);
 		setType(Type.POPUP);
@@ -241,9 +241,9 @@ public class IEport extends JDialog {
 			if(importBtn.isSelected()) {
 				// Reads File and Uploads
 				try {
-					Main.save(CSV.importData(Paths.get(inFileTxt.getText())));
+					main.save(CSV.importData(Paths.get(inFileTxt.getText())));
 					// Rebuilds Table
-					Main.front.tableRebuild();
+					main.getFront().tableRebuild();
 					// Confirmation Message
 					JOptionPane.showMessageDialog(this, "Data was imported.");
 				} catch (FileNotFoundException e1) {
@@ -257,7 +257,7 @@ public class IEport extends JDialog {
 					// Creates the File
 					f.createNewFile();
 					// Exports
-					CSV.exportData(Paths.get(inFileTxt.getText()));
+					CSV.exportData(Paths.get(inFileTxt.getText()), main.getDevices());
 					// Confirmation Message
 					JOptionPane.showMessageDialog(this, "Data was exported and stored in the new file.");
 				} catch (IOException e1) {

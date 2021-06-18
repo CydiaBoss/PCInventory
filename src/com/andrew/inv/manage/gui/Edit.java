@@ -82,7 +82,7 @@ public class Edit extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public Edit(Device d) {
+	public Edit(Main main, Device d) {
 		setTitle("Edit");
 		setIconImages(C.ICONS);
 		setType(Type.POPUP);
@@ -292,10 +292,10 @@ public class Edit extends JDialog {
 			// Delete
 			if(result == JOptionPane.YES_OPTION) {
 				// Successfully Removed
-				if(Main.devices.remove(d)) {
-					Main.save();
+				if(main.getDevices().remove(d)) {
+					main.save();
 					// Rebuild
-					Main.front.tableRebuild();
+					main.getFront().tableRebuild();
 				}else
 					JOptionPane.showConfirmDialog(
 						this, 
@@ -325,9 +325,9 @@ public class Edit extends JDialog {
 					monthBox.getSelectedIndex() + 1, 
 					(int) dateSpin.getValue()));
 			// Save Changes
-			Main.save();
+			main.save();
 			// Rebuilt Table
-			Main.front.tableRebuild();
+			main.getFront().tableRebuild();
 			// Close
 			dispose();
 		});
