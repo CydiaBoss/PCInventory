@@ -111,7 +111,7 @@ public class Main {
 			devices = new ArrayList<>();
 		}
 		// Correct Flags
-		main = (currentMain == C.DAT);
+		main = currentMain.equals(C.DAT);
 		// Launch GUI
 		EventQueue.invokeLater(() -> 
 			front = new FrontPage(this)
@@ -246,7 +246,7 @@ public class Main {
 		// Confirm
 		int result = JOptionPane.showConfirmDialog(
 			front.getFrame(), 
-			in.getName() + " is about to be imported into the " + ((main)? "main" : "current") + " database.\n" +
+			in.getName() + " is about to be imported into the main database.\n" +
 			"Continue?", 
 			"Data Import Confirmation", 
 			JOptionPane.YES_NO_OPTION, 

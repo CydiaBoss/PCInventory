@@ -19,7 +19,6 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,10 +28,10 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
+import com.andrew.inv.manage.db.FileChooser;
 import com.andrew.inv.manage.file.CSV;
 
 public class IEport extends JDialog {
@@ -125,48 +124,18 @@ public class IEport extends JDialog {
 		iePanel.add(inFileTxt, gbc_inFileTxt);
 		inFileTxt.setColumns(10);
 		
-		JFileChooser fileChooser = new JFileChooser() {
-
-			// Setup
-			{
-				addChoosableFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
-				setAcceptAllFileFilterUsed(false);
-				setFileSelectionMode(JFileChooser.FILES_ONLY);
-			}
-			
-			/**
-			 * Serial
-			 */
-			private static final long serialVersionUID = 32428736498239L;
-			
-			/**
-			 * Ensure File Ending Exists
-			 */
-			@Override
-			public File getSelectedFile() {
-				// Get Selected File
-				File selFile = super.getSelectedFile();
-				// Detect File Ext. and Add if needed
-				if(selFile == null || selFile.getName().endsWith(".csv"))
-					return selFile;
-				else
-					return new File(selFile.getAbsolutePath() + ".csv");
-			}
-		
-		};
-		
 		JButton inFileBtn = new JButton("Browse");
 		inFileBtn.addActionListener(e -> {
-			int result = -1;
+			File result = null;
 			// If Importing
 			if(importBtn.isSelected())
-				result = fileChooser.showOpenDialog(this);
+				result = FileChooser.showFC(this, FileChooser.OPEN, FileChooser.CSV);
 			// Else Exporting
 			else
-				result = fileChooser.showSaveDialog(this);
+				result = FileChooser.showFC(this, FileChooser.SAVE, FileChooser.CSV);
 			// OK Pressed
-			if(result == JFileChooser.APPROVE_OPTION)
-				inFileTxt.setText(fileChooser.getSelectedFile().getAbsolutePath());
+			if(result != null)
+				inFileTxt.setText(result.getAbsolutePath());
 		});
 		// Default Off
 		inFileBtn.setEnabled(false);
@@ -211,24 +180,27 @@ public class IEport extends JDialog {
 				JOptionPane.INFORMATION_MESSAGE
 			);
 			// Actions
-			if(result == JOptionPane.YES_OPTION) 
-				if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+			if(result == JOptionPane.YES_OPTION) {
+				// Get File
+				File file = FileChooser.showFC(this, FileChooser.SAVE, FileChooser.CSV);
+				if(file != null)
 					try {
 						// Save Template
 						Files.copy(
 							Paths.get(IEport.class.getResource("/template.csv").toURI()), 
-							Paths.get(fileChooser.getSelectedFile().getAbsolutePath()), 
+							Paths.get(file.getAbsolutePath()), 
 							StandardCopyOption.REPLACE_EXISTING,
 							StandardCopyOption.COPY_ATTRIBUTES
 						);
 						// Also save Status Options for Reference
 						Files.copy(
 							Paths.get(IEport.class.getResource("/status_opts.csv").toURI()), 
-							Paths.get(fileChooser.getSelectedFile().getParent() + File.separatorChar + "status_opts.csv"), 
+							Paths.get(file.getParent() + File.separatorChar + "status_opts.csv"), 
 							StandardCopyOption.REPLACE_EXISTING,
 							StandardCopyOption.COPY_ATTRIBUTES
 						);
 					} catch (IOException | URISyntaxException e1) {}
+			}
 			// Otherwise do nothing
 		});
 		btnPanel.add(templateBtn);

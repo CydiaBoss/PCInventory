@@ -59,6 +59,7 @@ public class FrontPage {
 		currentData = m.getDevices();
 		// Start Correct Processes
 		initialize();
+		// Start ADVSearch in background
 		advSearch = new AdvSearch(m);
 		frm.setVisible(true);
 	}
@@ -307,6 +308,9 @@ public class FrontPage {
 		
 		JMenuItem newMenuItem = new JMenuItem("New Database");
 		newMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/file-new.png")));
+		newMenuItem.addActionListener(e -> {
+			// TODO Setup a default File Chooser for CSV
+		});
 		fileMenu.add(newMenuItem);
 		
 		JMenuItem openMenuItem = new JMenuItem("Open Database");
