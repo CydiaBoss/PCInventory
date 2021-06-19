@@ -107,7 +107,8 @@ public class Main {
 		// New Default File Database
 		else if (currentMain == C.DAT){
 			// Make Main pcdb Hidden
-			Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
+			if(System.getProperty("os.name").contains("Windows"))
+				Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
 			devices = new ArrayList<>();
 		}
 		// Correct Flags
