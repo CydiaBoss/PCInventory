@@ -229,7 +229,7 @@ public class IEport extends JDialog {
 					// Creates the File
 					f.createNewFile();
 					// Exports
-					CSV.exportData(Paths.get(inFileTxt.getText()), main.getDevices());
+					CSV.exportData(Paths.get(inFileTxt.getText()), main.getDevices(), CSV.EDIT);
 					// Confirmation Message
 					JOptionPane.showMessageDialog(this, "Data was exported and stored in the new file.");
 				} catch (IOException e1) {

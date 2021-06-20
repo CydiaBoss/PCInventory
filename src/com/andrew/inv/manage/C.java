@@ -68,6 +68,11 @@ public class C {
 	public static final ArrayList<Image> ICONS = new ArrayList<>();
 	
 	/**
+	 * Maximum Buffer Size
+	 */
+	public static final int BUFFER_SIZE_MAX = 1024;
+	
+	/**
 	 * Spacing for GUI
 	 */
 	public static final int SPACING = 10;

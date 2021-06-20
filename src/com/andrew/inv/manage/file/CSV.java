@@ -2,6 +2,10 @@ package com.andrew.inv.manage.file;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -11,7 +15,6 @@ import java.util.ArrayList;
 
 import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.db.Device;
-
 import com.andrew.inv.manage.db.Device.Status;
 
 /**
@@ -42,12 +45,12 @@ public class CSV {
 	 * Path to file
 	 * 
 	 * @return
-	 * Data
+	 * Data or null when failure
 	 * 
 	 * @throws FileNotFoundException 
 	 * Thrown when file is bad
 	 */
-	public static ArrayList<Device> importData(Path path) throws FileNotFoundException {
+	public static ArrayList<Device> importData(Path path) throws FileNotFoundException{
 		ArrayList<Device> devices = new ArrayList<>();
 		try {
 			// Go thru each row
@@ -81,7 +84,7 @@ public class CSV {
 		return devices;
 	}
 	
-	public static ArrayList<String> parseRow(String line) {
+	private static ArrayList<String> parseRow(String line) {
 		// Setup
 		ArrayList<String> cells = new ArrayList<>();
 		String tempCell = "";
@@ -123,7 +126,7 @@ public class CSV {
 											 ADD = {StandardOpenOption.WRITE, StandardOpenOption.APPEND};
 	
 	/**
-	 * Append to a File
+	 * Append to a File (Will Lock File)
 	 * 
 	 * @param path
 	 * The File
@@ -133,14 +136,14 @@ public class CSV {
 	 * @throws IOException
 	 * Error
 	 */
-	public static void exportData(Path path, ArrayList<Device> devices) throws IOException {
+	public static void exportData(Path path, ArrayList<Device> devices, StandardOpenOption... options) throws IOException {
 		// Create an array of strings
-		ArrayList<String> row = new ArrayList<>();
+		String row = "";
 		// Add Header Row
-		row.add(C.HEADER);
+		row += C.HEADER + "\n";
 		// Transcribe
 		for(Device d : devices)
-			row.add(
+			row +=
 				d.getHost() + "," + 
 				d.getSerial() + "," + 
 				d.getModel() + "," + 
@@ -149,10 +152,17 @@ public class CSV {
 				d.getLoc() + "," + 
 				d.getStatus().name() + "," + 
 				d.getUser() + "," +
-				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\"" // Replaces \n so no interference here
-			);
-		
+				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\"\n" // Replaces \n so no interference here
+			;
+		// Open FileChannel
+		FileChannel fChannel = FileChannel.open(path, options);
+		// Lock Attempt
+		FileLock lock = fChannel.tryLock();
+		if(lock == null)
+			throw new IOException();
 		// Write
-		Files.write(path, row, CSV.ADD);
+		fChannel.write(ByteBuffer.wrap(row.getBytes(StandardCharsets.UTF_8)));
+		// Unlock After Completion
+		lock.release();
 	}
 }

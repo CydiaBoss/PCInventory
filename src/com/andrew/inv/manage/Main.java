@@ -39,9 +39,8 @@ public class Main {
 			for(String pathPiece : args)
 				path += pathPiece;
 			// Make File
-			File f = new File(path);
 			// Try Opening
-			openFile(f);
+			openFile(new File(path));
 		// Starts with Default
 		}else
 			openFile(C.DAT);
@@ -85,6 +84,8 @@ public class Main {
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon32.png")));
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon64.png")));
 		C.ICONS.add(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon128.png")));
+		// Correct Flags
+		main = currentMain.equals(C.DAT);
 		// Tries to locks File
 		fileLock();
 		// File Check (Create if not existing)
@@ -97,7 +98,7 @@ public class Main {
 				JOptionPane.showMessageDialog(
 					null, 
 					"File Corruption Detected.\n" +
-					"Please repair or delete data.csv to regain functionality.", 
+					"The file is corrupted.", 
 					"File Corruption", 
 					JOptionPane.ERROR_MESSAGE
 				);
@@ -111,8 +112,6 @@ public class Main {
 				Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
 			devices = new ArrayList<>();
 		}
-		// Correct Flags
-		main = currentMain.equals(C.DAT);
 		// Launch GUI
 		EventQueue.invokeLater(() -> 
 			front = new FrontPage(this)
@@ -210,8 +209,6 @@ public class Main {
 	/**
 	 * Detect for File Lock
 	 * 
-	 * TODO May replace with FileLock
-	 * 
 	 * @throws HeadlessException
 	 * @throws IOException
 	 */
@@ -274,7 +271,7 @@ public class Main {
 	public void save() {
 		// Edit
 		try {
-			CSV.exportData(Paths.get(currentMain.toURI()), devices);
+			CSV.exportData(Paths.get(currentMain.toURI()), devices, CSV.EDIT);
 		} catch (IOException e) {}
 	}
 	
@@ -307,7 +304,7 @@ public class Main {
 		
 		// Append
 		try {
-			CSV.exportData(Paths.get(currentMain.toURI()), d);
+			CSV.exportData(Paths.get(currentMain.toURI()), d, CSV.ADD);
 		} catch (IOException e) {}
 	}
 	
