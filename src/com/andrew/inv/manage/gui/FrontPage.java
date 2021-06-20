@@ -5,16 +5,25 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.EventObject;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,13 +38,9 @@ import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.Main;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
+import com.andrew.inv.manage.db.FileChooser;
 import com.andrew.inv.manage.db.Search;
 import com.andrew.inv.manage.db.Sort;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import java.awt.SystemColor;
-import javax.swing.ImageIcon;
 
 public class FrontPage {
 
@@ -78,7 +83,7 @@ public class FrontPage {
 		frm.setSize(600, 450);
 		frm.setMinimumSize(new Dimension(450, 300));
 		frm.setLocationRelativeTo(null);
-		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frm.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		// The Search Panel
@@ -178,8 +183,6 @@ public class FrontPage {
 		
 		// Setup Data for Table
 		tableRebuild();
-		
-		// See Line 192 for List Listener
 		
 		// Add Mouse Listener
 		resultDisplay.addMouseListener(new MouseAdapter() {
@@ -306,20 +309,41 @@ public class FrontPage {
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 		
+		// Make new database
 		JMenuItem newMenuItem = new JMenuItem("New Database");
 		newMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/file-new.png")));
 		newMenuItem.addActionListener(e -> {
-			// TODO Setup a default File Chooser for CSV
+			// Select File
+			File newFile = FileChooser.showFC(frm, FileChooser.SAVE, FileChooser.PCDB);
+			// Not Cancelled
+			if(newFile != null) {
+				// Create
+				try {
+					newFile.createNewFile();
+				} catch (IOException e1) {}
+				// Open
+				Main.openFile(newFile);
+			}
 		});
 		fileMenu.add(newMenuItem);
 		
+		// Open a database
 		JMenuItem openMenuItem = new JMenuItem("Open Database");
 		openMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/file-open.png")));
+		openMenuItem.addActionListener(e -> {
+			// Select File
+			File openFile = FileChooser.showFC(frm, FileChooser.OPEN, FileChooser.PCDB);
+			// Not Cancelled
+			if(openFile != null) 
+				// Open
+				Main.openFile(openFile);
+		});
 		fileMenu.add(openMenuItem);
 		
 		JMenu editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
 		
+		// Rename a database
 		JMenuItem renameMenuItem = new JMenuItem("Rename Database");
 		renameMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/edit-rename.png")));
 		// Do not allow renaming if default database is being used at the moment
@@ -370,6 +394,34 @@ public class FrontPage {
 				editBtn.setEnabled(false);
 		});
 		
+		// Closing Operations
+		frm.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {}
+
+			@Override
+			public void windowClosing(WindowEvent e) {}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// Close the ADVSearch in the background
+				advSearch.dispose();
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {}
+
+			@Override
+			public void windowActivated(WindowEvent e) {}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {}
+			
+		});
 	}
 	
 	// Headers for the Tables

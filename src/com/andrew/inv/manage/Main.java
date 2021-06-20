@@ -209,12 +209,17 @@ public class Main {
 	/**
 	 * Detect for File Lock
 	 * 
+	 * TODO May replace with FileLock
+	 * 
 	 * @throws HeadlessException
 	 * @throws IOException
 	 */
 	private void fileLock() throws HeadlessException, IOException {
 		// Ensure File Safety
-		lock = new File("." + ((main)? "" : currentMain.getName()) + "lock.tmp");
+		lock = new File(
+			((currentMain.getParent() != null)? currentMain.getParent() + File.separator : "") + 
+			"." + ((main)? "" : currentMain.getName()) + "lock.tmp"
+		);
 		if(!lock.createNewFile()) {
 			// Not Safe
 			safe = false;
@@ -232,6 +237,13 @@ public class Main {
 			Files.setAttribute(Paths.get(lock.toURI()), "dos:hidden", true);
 			lock.deleteOnExit();
 		}
+	}
+	
+	/**
+	 * Attempts early unlocking
+	 */
+	public void unlock() {
+		lock.delete();
 	}
 	
 	/**
@@ -312,7 +324,7 @@ public class Main {
 	 */
 	public static void openFile(File fileToOpen) {
 		// Attempt to open the File in another Thread
-		new Thread(() -> {
+		Thread th = new Thread(() -> {
 			try {
 				// If .pcdb or just the default database, open selected inventory
 				if(fileToOpen.getName().endsWith(".pcdb")) 
@@ -333,6 +345,7 @@ public class Main {
 					return;
 				}
 			} catch (IOException e) {}
-		}).run();
+		});
+		th.run();
 	}
 }

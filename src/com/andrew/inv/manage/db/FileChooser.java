@@ -29,14 +29,8 @@ public class FileChooser extends JFileChooser{
 	 */
 	public static final int SAVE = 0,
 							OPEN = 1;
-	
-	private FileNameExtensionFilter ext;
 
-	private FileChooser(FileNameExtensionFilter ext) {
-		// Set as the desired file extension
-		this.ext = ext;
-		// Setup extensions
-		addChoosableFileFilter(ext);
+	private FileChooser() {
 		// Dis-allows All Files
 		setAcceptAllFileFilterUsed(false);
 		// Set as file only
@@ -48,6 +42,10 @@ public class FileChooser extends JFileChooser{
 	 */
 	@Override
 	public File getSelectedFile() {
+		// Get Extension (DEFAULT is PCDB)
+		FileNameExtensionFilter ext = PCDB;
+		if(getChoosableFileFilters().length > 0)
+			ext = (FileNameExtensionFilter) getChoosableFileFilters()[0];
 		// Get Selected File
 		File selFile = super.getSelectedFile();
 		// Detect File Ext. and Add if needed
@@ -57,23 +55,44 @@ public class FileChooser extends JFileChooser{
 			return new File(selFile.getAbsolutePath() + "." + ext.getExtensions()[0]);
 	}
 	
+	// Only Instances Required
+	private static final FileChooser FC = new FileChooser();
+	
+	/**
+	 * Open the file chooser
+	 * 
+	 * @param parent
+	 * Parent UI
+	 * @param MODE
+	 * File chooser's mode (SAVE or OPEN)
+	 * @param EXT
+	 * File extension (CSV or PCDB)
+	 * 
+	 * @return
+	 * A file or null if cancelled
+	 */
 	public static File showFC(Component parent, final int MODE, final FileNameExtensionFilter EXT) {
-		// Start File Chooser
-		FileChooser fc = new FileChooser(EXT);
+		// Reset File Filter
+		FC.resetChoosableFileFilters();
+		// Set File Filter
+		FC.addChoosableFileFilter(EXT);
+		// Results
 		int result = -1;
 		// Select Mode
 		switch(MODE) {
-			case SAVE: 
-				result = fc.showSaveDialog(parent);
+			case SAVE: {
+				result = FC.showSaveDialog(parent);
 				break;
-			case OPEN:
-				result = fc.showOpenDialog(parent);
+			}
+			case OPEN: {
+				result = FC.showOpenDialog(parent);
 				break;
+			}
 		}
 		// Detect Cancellation
 		if(result != APPROVE_OPTION)
 			return null;
 		// Otherwise
-		return fc.getSelectedFile();
+		return FC.getSelectedFile();
 	}
 }
