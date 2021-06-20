@@ -234,17 +234,11 @@ public class Main {
 					System.exit(0);
 		// Create File Lock
 		}else{
-			// Hide Lock
-			Files.setAttribute(Paths.get(lock.toURI()), "dos:hidden", true);
+			// Hide Lock on Windows
+			if(System.getProperty("os.name").contains("Windows"))
+				Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
 			lock.deleteOnExit();
 		}
-	}
-	
-	/**
-	 * Attempts early unlocking
-	 */
-	public void unlock() {
-		lock.delete();
 	}
 	
 	/**
