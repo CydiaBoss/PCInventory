@@ -20,8 +20,6 @@ import com.andrew.inv.manage.db.Device.Status;
 /**
  * CSV (PCDB) Sheet Management
  * 
- * TODO Start switching to FileChannel for easier file lock
- * 
  * @author andre
  *
  */
@@ -39,7 +37,7 @@ public class CSV {
 							NOTE = 8;
 	
 	/**
-	 * Imports data from a CSV file
+	 * Imports data from a CSV file (Does not lock file)
 	 * 
 	 * @param path
 	 * Path to file
@@ -162,7 +160,11 @@ public class CSV {
 			throw new IOException();
 		// Write
 		fChannel.write(ByteBuffer.wrap(row.getBytes(StandardCharsets.UTF_8)));
+		// Ensure Complete
+		fChannel.force(true);
 		// Unlock After Completion
-		lock.release();
+		lock.close();
+		// Close Channel
+		fChannel.close();
 	}
 }
