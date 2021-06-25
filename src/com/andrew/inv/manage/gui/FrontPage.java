@@ -378,6 +378,9 @@ public class FrontPage {
 		menuBar.add(toolsMenu);
 		
 		JMenuItem lockMenuItem = new JMenuItem("Lock Database");
+		lockMenuItem.addActionListener(e -> 
+			new Password(main).setVisible(true)
+		);
 		lockMenuItem.setIcon(new ImageIcon(FrontPage.class.getResource("/menu/tools-lock.png")));
 		toolsMenu.add(lockMenuItem);
 		

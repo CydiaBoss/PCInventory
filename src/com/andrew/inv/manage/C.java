@@ -73,6 +73,11 @@ public class C {
 	public static final int KEY_ITERATE_NUM = 65536;
 	
 	/**
+	 * Salt Size
+	 */
+	public static final int SALT_SIZE = 65536;
+	
+	/**
 	 * Spacing for GUI
 	 */
 	public static final int SPACING = 10;

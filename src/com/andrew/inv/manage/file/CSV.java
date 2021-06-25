@@ -20,7 +20,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Scanner;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -29,7 +28,6 @@ import com.andrew.inv.manage.C;
 import com.andrew.inv.manage.db.Device;
 import com.andrew.inv.manage.db.Device.Status;
 import com.andrew.inv.manage.db.Security;
-import com.andrew.inv.manage.gui.Unlock;
 
 /**
  * CSV (PCDB) Sheet Management
@@ -64,56 +62,34 @@ public class CSV {
 	 */
 	public static ArrayList<Device> importData(Path path) throws FileNotFoundException{
 		ArrayList<Device> devices = new ArrayList<>();
-		// Detect for Encryption
-		Scanner test = new Scanner(new File(path.toUri()));
-		if(test.nextLine().equals("true")) {
-			// Close Scanner
-			test.close();
-			// Encrypted!
-			Unlock unlock = new Unlock();
-			Thread th = new Thread(() -> 
-				unlock.initialize()
-			);
-			// Start Password Entry
-			th.start();
-			// Waiting
-			try {
-				th.join();
-			} catch (InterruptedException e) {}
-			// Get Password
-			return importData(path, unlock.getPassword());
-		}else{
-			// Close Scanner
-			test.close();
-			// Parse
-			try {
-				// Go thru each row
-				Files.lines(path).forEach(row -> {
-					// Ignore Header Row
-					if(row.equals(C.HEADER)) 
-						return;
-					// Start Processing
-					ArrayList<String> data = parseRow(row);
-					// Adds a new device with its Host, Serial, Model
-					Device currDevice = new Device(data.get(HOST), data.get(SERIAL), data.get(MODEL));
-					// Set OS
-					currDevice.setOS(data.get(OS), LocalDate.parse(data.get(DATE)));
-					// Set Location
-					currDevice.setLoc(data.get(LOC));
-					// Set Status
-					currDevice.setStatus(Status.valueOf(data.get(STAT)));
-					// Set User
-					currDevice.setUser(data.get(USER));
-					// Add Note if there is one (length 9 + buffer)
-					if(data.size() >= 9)
-						currDevice.setNote(data.get(NOTE).replaceAll("\\\\n", "\n"));
-					// Add
-					devices.add(currDevice);
-				});
-			} catch (IOException | ArrayIndexOutOfBoundsException | DateTimeException e) {
-				// Throws File Bad Exception
-				throw new FileNotFoundException();
-			}
+		// Parse
+		try {
+			// Go thru each row
+			Files.lines(path).forEach(row -> {
+				// Ignore Header Row
+				if(row.equals(C.HEADER)) 
+					return;
+				// Start Processing
+				ArrayList<String> data = parseRow(row);
+				// Adds a new device with its Host, Serial, Model
+				Device currDevice = new Device(data.get(HOST), data.get(SERIAL), data.get(MODEL));
+				// Set OS
+				currDevice.setOS(data.get(OS), LocalDate.parse(data.get(DATE)));
+				// Set Location
+				currDevice.setLoc(data.get(LOC));
+				// Set Status
+				currDevice.setStatus(Status.valueOf(data.get(STAT)));
+				// Set User
+				currDevice.setUser(data.get(USER));
+				// Add Note if there is one (length 9 + buffer)
+				if(data.size() >= 9)
+					currDevice.setNote(data.get(NOTE).replaceAll("\\\\n", "\n"));
+				// Add
+				devices.add(currDevice);
+			});
+		} catch (IOException | ArrayIndexOutOfBoundsException | DateTimeException e) {
+			// Throws File Bad Exception
+			throw new FileNotFoundException();
 		}
 		// Device Return
 		return devices;
@@ -126,20 +102,25 @@ public class CSV {
 	 * The File
 	 * @param password
 	 * The Password
+	 * @param iv
+	 * The IV
+	 * @param salt
+	 * The salt
 	 * 
 	 * @return
 	 * The data
 	 * 
 	 * @throws FileNotFoundException
 	 */
-	private static ArrayList<Device> importData(Path path, char[] password) throws FileNotFoundException{
+	public static ArrayList<Device> importData(Path path, char[] password, IvParameterSpec iv, byte[] salt) throws FileNotFoundException{
 		ArrayList<Device> devices = new ArrayList<>();
 		try {
 			// Make Reader
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path.toUri())), "UTF-8"));
-			// Reads the encryption setting if needed
-			byte[] iv = reader.readLine().getBytes();
-			String salt = reader.readLine();
+			// Skip encryption flags
+			reader.readLine();
+			reader.readLine();
+			reader.readLine();
 			// Gather the rest of the file
 			String encryptData = "";
 			String temp = "";
@@ -152,9 +133,12 @@ public class CSV {
 			// Get Key
 			SecretKey key = Security.getKey(password, salt);
 			// Decrypt
-			String plainData = new String(Security.decrypt(Security.decode(encryptData), key, new IvParameterSpec(iv)));
+			String plainData = new String(Security.decrypt(Security.decode(encryptData), key, iv));
 			// Parse
 			for(String row : plainData.split("\n")) {
+				// Header
+				if(row.equals(C.HEADER))
+					continue;
 				// Start Processing
 				ArrayList<String> data = parseRow(row);
 				// Adds a new device with its Host, Serial, Model
@@ -267,5 +251,65 @@ public class CSV {
 		lock.close();
 		// Close Channel
 		fChannel.close();
+	}
+	
+	/**
+	 * Export Data with a password
+	 * 
+	 * @param path
+	 * The File
+	 * @param password
+	 * The Password
+	 * @param iv
+	 * The IV
+	 * @param salt
+	 * The salt
+	 */
+	public static void exportData(Path path, ArrayList<Device> devices, char[] password, IvParameterSpec iv, byte[] salt) {
+		// Create an array of strings
+		String row = "true\n";
+		// Add Encryption Data
+		row += iv.getIV() + "\n" +
+			   salt + "\n";
+		// Add Header Row
+		row += C.HEADER + "\n";
+		// Transcribe
+		for(Device d : devices)
+			row +=
+				d.getHost() + "," + 
+				d.getSerial() + "," + 
+				d.getModel() + "," + 
+				d.getOS() + "," + 
+				d.getDateUpdated().toString() + "," + 
+				d.getLoc() + "," + 
+				d.getStatus().name() + "," + 
+				d.getUser() + "," +
+				"\"" + d.getNote().replaceAll("\n", "\\\\n") + "\"\n" // Replaces \n so no interference here
+			;
+		// Attempt Encryption
+		try {
+			// Make Data
+			byte[] data = Security.encrypt(row.getBytes(), Security.getKey(password, salt), iv);
+			// Encode
+			String encodeData = Security.encode(data);
+			// Open FileChannel
+			FileChannel fChannel = FileChannel.open(path, EDIT);
+			// Lock Attempt
+			FileLock lock = fChannel.tryLock();
+			if(lock == null)
+				throw new IOException();
+			// Write
+			fChannel.write(ByteBuffer.wrap(encodeData.getBytes()));
+			// Ensure Complete
+			fChannel.force(true);
+			// Unlock After Completion
+			lock.close();
+			// Close Channel
+			fChannel.close();
+		} catch (InvalidKeyException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

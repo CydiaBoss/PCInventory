@@ -42,11 +42,11 @@ public class Security {
 	 * @throws InvalidKeySpecException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static SecretKey getKey(char[] password, String salt) throws InvalidKeySpecException, NoSuchAlgorithmException {
+	public static SecretKey getKey(char[] password, byte[] salt) throws InvalidKeySpecException, NoSuchAlgorithmException {
 		// Get the Secret Key Generator
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 		// Key Specification
-	    KeySpec spec = new PBEKeySpec(password, salt.getBytes(), C.KEY_ITERATE_NUM, 256);
+	    KeySpec spec = new PBEKeySpec(password, salt, C.KEY_ITERATE_NUM, 256);
 	    // Make Key for AES
 	    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 	    return secret;
@@ -63,6 +63,19 @@ public class Security {
 	    byte[] iv = new byte[16];
 	    new SecureRandom().nextBytes(iv);
 	    return new IvParameterSpec(iv);
+	}
+	
+	/**
+	 * Generates Salt
+	 * 
+	 * @return
+	 * The Initialization Vector
+	 */
+	public static byte[] generateSalt() {
+		// Make a byte array with random bits
+	    byte[] salt = new byte[C.SALT_SIZE];
+	    new SecureRandom().nextBytes(salt);
+	    return salt;
 	}
 	
 	/**

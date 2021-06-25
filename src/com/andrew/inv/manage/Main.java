@@ -9,15 +9,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
 
+import javax.crypto.spec.IvParameterSpec;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
 import com.andrew.inv.manage.db.Device;
+import com.andrew.inv.manage.db.Security;
 import com.andrew.inv.manage.file.CSV;
 import com.andrew.inv.manage.gui.FrontPage;
+import com.andrew.inv.manage.gui.Unlock;
 
 /**
  * Main Class
@@ -64,6 +68,11 @@ public class Main {
 	// Not Main 
 	private boolean main;
 	
+	// Security
+	private char[] password = null;
+	private IvParameterSpec iv = null;
+	private byte[] salt = null;
+	
 	/**
 	 * Start the App
 	 * 
@@ -92,7 +101,41 @@ public class Main {
 		if(!currentMain.createNewFile())
 			// Read Data from CSV
 			try {
-				devices = CSV.importData(Paths.get(currentMain.toURI()));
+				// Detect for Encryption
+				Scanner test = new Scanner(currentMain);
+				if(test.hasNextLine() && test.nextLine().equals("true")) {
+					// Encrypted!
+					Unlock unlock = new Unlock();
+					Thread th = new Thread(() -> 
+						unlock.initialize()
+					);
+					// Start Password Entry
+					th.start();
+					// Waiting
+					try {
+						th.join();
+					} catch (InterruptedException e) {}
+					// Get Password
+					password = unlock.getPassword();
+					// If Null = Refuse to Open
+					if(password == null){
+						// Close
+						test.close();
+						return;
+					}else{
+						// Get IV and Salt
+						iv = new IvParameterSpec(test.nextLine().getBytes());
+						salt = test.nextLine().getBytes();
+						// Close Scanner
+						test.close();
+						// Read
+						devices = CSV.importData(Paths.get(currentMain.toURI()), password, iv, salt);
+					}
+				}else{
+					// Not Encrypted -> Use Regular Method
+					test.close();
+					devices = CSV.importData(Paths.get(currentMain.toURI()));
+				}
 			}catch (FileNotFoundException e) {
 				// Bad File
 				JOptionPane.showMessageDialog(
@@ -106,9 +149,9 @@ public class Main {
 				System.exit(-1);
 			}
 		// New Default File Database
-		else if (currentMain == C.DAT){
+		else{
 			// Make Main pcdb Hidden
-			if(System.getProperty("os.name").contains("Windows"))
+			if(currentMain == C.DAT && System.getProperty("os.name").contains("Windows"))
 				Files.setAttribute(Paths.get(currentMain.toURI()), "dos:hidden", true);
 			devices = new ArrayList<>();
 		}
@@ -207,7 +250,7 @@ public class Main {
 	}
 	
 	/**
-	 * Detect for File Lock (Not really a lock, just a file to notify if database is in use
+	 * Detect for File Lock (Not really a lock, just a flag to notify if database is in use
 	 * 
 	 * @throws HeadlessException
 	 * @throws IOException
@@ -266,13 +309,41 @@ public class Main {
 	}
 	
 	/**
+	 * Adds or changes a password. Will Generate IV and Salt
+	 * 
+	 * @param password
+	 * New Password
+	 */
+	public void setPassword(char[] password) {
+		// Look for blank -> Disable Password
+		if(password.length == 0) {
+			this.password = null;
+			iv = null;
+			salt = null;
+		// Set Password
+		}else{
+			this.password = password;
+			iv = Security.generateIV();
+			salt = Security.generateSalt();
+		}
+		// Update File
+		save();
+	}
+	
+	/**
 	 * Updated the data file
 	 */
 	public void save() {
-		// Edit
-		try {
-			CSV.exportData(Paths.get(currentMain.toURI()), devices, CSV.EDIT);
-		} catch (IOException e) {}
+		// Background
+		new Thread(() -> {
+			// Edit
+			try {
+				if(password == null)
+					CSV.exportData(Paths.get(currentMain.toURI()), devices, CSV.EDIT);
+				else
+					CSV.exportData(Paths.get(currentMain.toURI()), devices, password, iv, salt);
+			} catch (IOException e) {}
+		}).start();
 	}
 	
 	/**
@@ -303,9 +374,14 @@ public class Main {
 		devices.addAll(d);
 		
 		// Append
-		try {
-			CSV.exportData(Paths.get(currentMain.toURI()), d, CSV.ADD);
-		} catch (IOException e) {}
+		new Thread(() -> {
+			try {
+				if(password == null)
+					CSV.exportData(Paths.get(currentMain.toURI()), d, CSV.ADD);
+				else
+					CSV.exportData(Paths.get(currentMain.toURI()), devices, password, iv, salt);
+			} catch (IOException e) {}
+		}).start();
 	}
 	
 	/**
