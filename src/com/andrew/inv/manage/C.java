@@ -60,7 +60,7 @@ public class C {
 	/**
 	 * GUI Default Font
 	 */
-	public static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 11);
+	public static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 12);
 	
 	/**
 	 * Icons
@@ -68,9 +68,9 @@ public class C {
 	public static final ArrayList<Image> ICONS = new ArrayList<>();
 	
 	/**
-	 * Maximum Buffer Size
+	 * Key Iteration
 	 */
-	public static final int BUFFER_SIZE_MAX = 1024;
+	public static final int KEY_ITERATE_NUM = 65536;
 	
 	/**
 	 * Spacing for GUI

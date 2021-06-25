@@ -207,7 +207,7 @@ public class Main {
 	}
 	
 	/**
-	 * Detect for File Lock
+	 * Detect for File Lock (Not really a lock, just a file to notify if database is in use
 	 * 
 	 * @throws HeadlessException
 	 * @throws IOException
@@ -316,7 +316,7 @@ public class Main {
 	 */
 	public static void openFile(File fileToOpen) {
 		// Attempt to open the File in another Thread
-		Thread th = new Thread(() -> {
+		new Thread(() -> {
 			try {
 				// If .pcdb or just the default database, open selected inventory
 				if(fileToOpen.getName().endsWith(".pcdb")) 
@@ -337,7 +337,6 @@ public class Main {
 					return;
 				}
 			} catch (IOException e) {}
-		});
-		th.run();
+		}).run();
 	}
 }
